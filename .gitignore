@@ -1,0 +1,15 @@
+# VS-Code
+.vscode/
+
+# Python Files
+__pycache__/
+venv/
+
+# Datenbanken
+*.db
+
+# reports
+reports/
+
+# MacOS Files
+.DS_Store
