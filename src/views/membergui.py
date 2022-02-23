@@ -4,8 +4,7 @@ from tkinter import ttk
 
 from sqlalchemy import update
 
-import models as db
-
+import src.models as db
 
 class MemberGUI:
     def __init__(self, parent) -> None:

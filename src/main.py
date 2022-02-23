@@ -5,8 +5,6 @@ from views.membergui import MemberGUI
 from views.psagui import PsaGUI
 from views.specialpsagui import SpecialPsaGUI
 
-# import src.models as db
-
 
 class MainGUI:
     def __init__(self, parent) -> None:

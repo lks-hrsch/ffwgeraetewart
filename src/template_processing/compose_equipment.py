@@ -7,7 +7,7 @@ from docxcompose.composer import Composer
 from .paragraph_replace_text import paragraph_replace_text
 
 ALL_DOCUMENTS = {
-    "BaseEquipment": "src/templates/template_equipment.docx",
+    "BaseEquipment": "templates/template_equipment.docx",
 }
 
 
@@ -71,7 +71,7 @@ def compose_single_equipment(parameters: dict):
             find_and_replace(doc, parameterChecks)
             composed_master.append(doc)
 
-    composed_master.save("reports/out.docx")
+    composed_master.save("../reports/out.docx")
     return composed_master
 
 
@@ -84,7 +84,7 @@ def compose_multiple_equipment(parametersList: list):
             first = False
         else:
             master.append(compose_single_equipment(parameters).doc)
-    master.save("reports/out.docx")
+    master.save("../reports/out.docx")
     pass
 
 

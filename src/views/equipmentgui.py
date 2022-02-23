@@ -257,9 +257,9 @@ class EquipmentGUI:
             tp.compose_multiple_equipment([parameterEquipment])
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "reports/out.docx"))
+                subprocess.call(("open", "../reports/out.docx"))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("reports/out.docx")
+                os.startfile("../reports/out.docx")
         pass
 
     def commandPrintSingleEquipmentBlanko(self):
@@ -283,9 +283,9 @@ class EquipmentGUI:
             tp.compose_multiple_equipment([parameterEquipment])
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "reports/out.docx"))
+                subprocess.call(("open", "../reports/out.docx"))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("reports/out.docx")
+                os.startfile("../reports/out.docx")
         pass
 
     def commandPrintAllEquipments(self):
@@ -320,9 +320,9 @@ class EquipmentGUI:
         tp.compose_multiple_equipment(parameterEquipmentList)
 
         if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", "reports/out.docx"))
+            subprocess.call(("open", "../reports/out.docx"))
         elif platform.system() == "Windows":  # Windows
-            os.startfile("reports/out.docx")
+            os.startfile("../reports/out.docx")
         pass
 
     def commandPrintAllEquipmentsBlanko(self):
@@ -342,7 +342,7 @@ class EquipmentGUI:
         tp.compose_multiple_equipment(parameterEquipmentList)
 
         if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", "reports/out.docx"))
+            subprocess.call(("open", "../reports/out.docx"))
         elif platform.system() == "Windows":  # Windows
-            os.startfile("reports/out.docx")
+            os.startfile("../reports/out.docx")
         pass
