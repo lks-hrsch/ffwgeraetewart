@@ -7,8 +7,8 @@ from tkinter import ttk
 
 from sqlalchemy import select, update
 
-import models as db
-import template_processing as tp
+import src.models as db
+import src.template_processing as tp
 
 from .psagui_helpers.alterpsadialog import AlterPsaDialog
 
@@ -32,20 +32,20 @@ class PsaGUI:
         self.window.title("PSA")
         self.psatree = ttk.Treeview(self.window)
 
-        self.initTreeview()
-        self.initData()
+        self.init_treeview()
+        self.init_data()
 
         self.psatree.pack()
 
         self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
-        self.initAlterFrame()
+        self.init_alter_frame()
         self.alterframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
 
         self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
         self.initPrintFrame()
         self.printframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
 
-    def initTreeview(self):
+    def init_treeview(self):
         # Columndefinition
         self.psatree["columns"] = treeviewColumns
         self.psatree.column("#0", width=100, stretch=tkinter.NO)
@@ -57,7 +57,7 @@ class PsaGUI:
         for column in treeviewColumns:
             self.psatree.heading(column, text=column)
 
-    def initData(self):
+    def init_data(self):
         self.index = 1
         statement = (
             select(db.Psa, db.Member)
@@ -85,7 +85,7 @@ class PsaGUI:
             )
             self.index += 1
 
-    def initAlterFrame(self):
+    def init_alter_frame(self):
         alterbutton = tkinter.Button(
             self.alterframe, text="Bearbeiten", command=self.commandOpenAlterView
         )
@@ -192,9 +192,9 @@ class PsaGUI:
             tp.compose_specificpsa_for_member(parameters, self.psatypecombobox.get())
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "reports/out.docx"))
+                subprocess.call(("open", "../reports/out.docx"))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("reports/out.docx")
+                os.startfile("../reports/out.docx")
         pass
 
     def commandPrintWholeMember(self):
@@ -229,9 +229,9 @@ class PsaGUI:
             tp.compose_wholepsa(parameters)
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "reports/out.docx"))
+                subprocess.call(("open", "../reports/out.docx"))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("reports/out.docx")
+                os.startfile("../reports/out.docx")
         pass
 
     def commandPrintAll(self):
@@ -263,7 +263,7 @@ class PsaGUI:
         tp.compose_wholepsa(parameters)
 
         if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", "reports/out.docx"))
+            subprocess.call(("open", "../reports/out.docx"))
         elif platform.system() == "Windows":  # Windows
-            os.startfile("reports/out.docx")
+            os.startfile("../reports/out.docx")
         pass

@@ -2,12 +2,12 @@ import docx
 from docxcompose.composer import Composer
 
 ALL_DOCUMENTS = {
-    "Arbeitskleidung": "src/templates/template_arbeitskleidung.docx",
-    "Einsatzkleidung": "src/templates/template_einsatzkleidung.docx",
-    "Handschuhe": "src/templates/template_handschuhe.docx",
-    "Helm": "src/templates/template_helm.docx",
-    "Kopfschutzhaube": "src/templates/template_kopfschutzhaube.docx",
-    "Schuhe": "src/templates/template_schuhe.docx",
+    "Arbeitskleidung": "templates/template_arbeitskleidung.docx",
+    "Einsatzkleidung": "templates/template_einsatzkleidung.docx",
+    "Handschuhe": "templates/template_handschuhe.docx",
+    "Helm": "templates/template_helm.docx",
+    "Kopfschutzhaube": "templates/template_kopfschutzhaube.docx",
+    "Schuhe": "templates/template_schuhe.docx",
 }
 
 
@@ -30,7 +30,15 @@ def compose_specificpsa_for_member(parameters: dict, cloth: str):
     doc = docx.Document(ALL_DOCUMENTS[cloth])
     find_and_replace(doc, parameters)
     composed_master = Composer(doc)
-    composed_master.save("reports/out.docx")
+    composed_master.save("../reports/out.docx")
+    pass
+
+
+def compose_specificpsa_with_path(parameters: dict, filename: str):
+    doc = docx.Document(filename)
+    find_and_replace(doc, parameters)
+    composed_master = Composer(doc)
+    composed_master.save("../reports/out.docx")
     pass
 
 
@@ -64,7 +72,7 @@ def compose_wholepsa_for_member(parameters: dict):
     find_and_replace(schuhe, parameters)
     composed_master.append(schuhe)
 
-    composed_master.save("reports/out.docx")
+    composed_master.save("../reports/out.docx")
     pass
 
 
@@ -72,19 +80,19 @@ def compose_wholepsa(parameters):
     length: int = len(parameters)
 
     compose_wholepsa_for_member(parameters[0])
-    master = docx.Document("reports/out.docx")
+    master = docx.Document("../reports/out.docx")
     if length > 1:
         master.add_page_break()
     composed_master = Composer(master)
 
     for x in range(1, length):
         compose_wholepsa_for_member(parameters[x])
-        new_file = docx.Document("reports/out.docx")
+        new_file = docx.Document("../reports/out.docx")
         if x != length - 1:
             new_file.add_page_break()
         composed_master.append(new_file)
 
-    composed_master.save("reports/out.docx")
+    composed_master.save("../reports/out.docx")
 
 
 if __name__ == "__main__":
