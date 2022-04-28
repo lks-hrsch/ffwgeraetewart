@@ -1,9 +1,9 @@
 import tkinter
 
-from views.equipmentgui import EquipmentGUI
-from views.membergui import MemberGUI
-from views.psagui import PsaGUI
-from views.specialpsagui import SpecialPsaGUI
+from src.views.equipmentgui import EquipmentGUI
+from src.views.membergui import MemberGUI
+from src.views.psagui import PsaGUI
+from src.views.specialpsagui import SpecialPsaGUI
 
 
 class MainGUI:

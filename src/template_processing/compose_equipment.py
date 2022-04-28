@@ -1,13 +1,16 @@
 import math
+import os
 import re
 
 import docx
 from docxcompose.composer import Composer
 
+from src.pathes import main_path, out_path
+
 from .paragraph_replace_text import paragraph_replace_text
 
 ALL_DOCUMENTS = {
-    "BaseEquipment": "templates/template_equipment.docx",
+    "BaseEquipment": os.path.join(main_path, "templates/template_equipment.docx"),
 }
 
 
@@ -69,7 +72,7 @@ def compose_single_equipment(parameters: dict):
             find_and_replace(doc, parameterChecks)
             composed_master.append(doc)
 
-    composed_master.save("../reports/out.docx")
+    composed_master.save(out_path)
     return composed_master
 
 
@@ -82,7 +85,7 @@ def compose_multiple_equipment(parametersList: list):
             first = False
         else:
             master.append(compose_single_equipment(parameters).doc)
-    master.save("../reports/out.docx")
+    master.save(out_path)
     pass
 
 

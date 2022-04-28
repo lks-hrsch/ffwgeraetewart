@@ -1,7 +1,11 @@
+import os
+
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 
-_DB_URI = "sqlite:///database.db"
+from src.pathes import main_path
+
+_DB_URI = f"sqlite:///{os.path.join(main_path, 'database.db')}"
 BASE = declarative_base()
 
 from .equipment import Equipment

@@ -2,7 +2,7 @@ import datetime
 import tkinter
 from tkinter import ttk
 
-import models as db
+import src.models as db
 
 treeviewChecksColumns = (
     "Prüfdatum",
