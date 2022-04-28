@@ -10,8 +10,8 @@ from sqlalchemy import select, update
 import models as db
 import template_processing as tp
 
-from .equipmentgui_helpers.equipmenttypes import EquipmentTypes
 from .equipmentgui_helpers.alterequipmentdialog import AlterEquipmentDialog
+from .equipmentgui_helpers.equipmenttypes import EquipmentTypes
 
 treeviewColumns = (
     "Gerätename",
@@ -32,21 +32,21 @@ class EquipmentGUI:
         self.initTreeview()
         self.initData()
 
-        self.equipmenttree.pack(fill="both", expand="yes")
+        self.equipmenttree.pack(fill="both", expand=1)
 
         self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
         self.initAlterFrame()
-        self.alterframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         # TODO Delete noch nicht möglich
 
         self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
         self.initPrintFrame()
-        self.printframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
     def initTreeview(self):
         # Columndefinition
@@ -68,11 +68,7 @@ class EquipmentGUI:
             self.index += 1
 
         # init Data
-        for record in (
-            db.session.query(db.Equipment)
-            .filter(db.Equipment.deleted.is_(False))
-            .order_by(db.Equipment.id)
-        ):
+        for record in db.session.query(db.Equipment).filter(db.Equipment.deleted.is_(False)).order_by(db.Equipment.id):
             self.equipmenttree.insert(
                 record.category,
                 "end",
@@ -110,19 +106,17 @@ class EquipmentGUI:
         self.yearentry = tkinter.Entry(self.addframe)
         self.yearentry.grid(column=1, row=4)
 
-        addbutton = tkinter.Button(
-            self.addframe, text="Hinzufügen", command=self.commandAddToTreeview
-        )
+        addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=5, columnspan=2)
 
     def initAlterFrame(self):
-        alterbutton = tkinter.Button(
-            self.alterframe, text="Anzeigen", command=self.commandShowSelected
-        )
+        alterbutton = tkinter.Button(self.alterframe, text="Anzeigen", command=self.commandShowSelected)
         alterbutton.pack()
 
         deletebutton = tkinter.Button(
-            self.alterframe, text="Löschen", command=self.commandDeleteFromTreeview
+            self.alterframe,
+            text="Löschen",
+            command=self.commandDeleteFromTreeview,
         )
         deletebutton.pack()
 
@@ -142,7 +136,9 @@ class EquipmentGUI:
         printsingleequipmentblankobutton.pack()
 
         printallequipmentbutton = tkinter.Button(
-            self.printframe, text="Alle Geräte", command=self.commandPrintAllEquipments
+            self.printframe,
+            text="Alle Geräte",
+            command=self.commandPrintAllEquipments,
         )
         printallequipmentbutton.pack()
 
@@ -269,9 +265,7 @@ class EquipmentGUI:
         if len(selection) == 1:
             item = self.equipmenttree.item(selection)
             statement = (
-                select(db.Equipment)
-                .filter(db.Equipment.id.is_(item["text"]))
-                .filter(db.Equipment.deleted.is_(False))
+                select(db.Equipment).filter(db.Equipment.id.is_(item["text"])).filter(db.Equipment.deleted.is_(False))
             )
             for record in db.session.execute(statement).all():
                 parameterEquipment["devicename"] = record[0].name

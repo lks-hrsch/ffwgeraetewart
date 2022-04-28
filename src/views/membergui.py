@@ -6,6 +6,7 @@ from sqlalchemy import update
 
 import src.models as db
 
+
 class MemberGUI:
     def __init__(self, parent) -> None:
         self.parent = parent
@@ -20,15 +21,15 @@ class MemberGUI:
 
         self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
         self.initAlterFrame()
-        self.alterframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.deleteframe = tkinter.LabelFrame(self.window, text="Löschen")
         self.initDeleteFrame()
-        self.deleteframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.deleteframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
     def initTreeview(self):
         # Columndefinition
@@ -44,11 +45,7 @@ class MemberGUI:
 
     def initData(self):
         self.index = 1
-        for record in (
-            db.session.query(db.Member)
-            .filter(db.Member.deleted.is_(False))
-            .order_by(db.Member.lastname)
-        ):
+        for record in db.session.query(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname):
             self.membertree.insert(
                 "",
                 "end",
@@ -68,25 +65,29 @@ class MemberGUI:
         self.lastnameentry = tkinter.Entry(self.addframe)
         self.lastnameentry.grid(column=1, row=1)
 
-        addbutton = tkinter.Button(
-            self.addframe, text="Hinzufügen", command=self.commandAddToTreeview
-        )
+        addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=2, columnspan=2)
 
     def initAlterFrame(self):
         alterbutton = tkinter.Button(
-            self.alterframe, text="Bearbeiten", command=self.commandGetFromTreeview
+            self.alterframe,
+            text="Bearbeiten",
+            command=self.commandGetFromTreeview,
         )
         alterbutton.pack()
 
         savebutton = tkinter.Button(
-            self.alterframe, text="Speichern", command=self.commandSaveToTreeview
+            self.alterframe,
+            text="Speichern",
+            command=self.commandSaveToTreeview,
         )
         savebutton.pack()
 
     def initDeleteFrame(self):
         deletebutton = tkinter.Button(
-            self.deleteframe, text="Löschen", command=self.commandDeleteFromTreeview
+            self.deleteframe,
+            text="Löschen",
+            command=self.commandDeleteFromTreeview,
         )
         deletebutton.pack()
 
@@ -115,7 +116,11 @@ class MemberGUI:
         db.session.commit()
 
         self.membertree.insert(
-            "", "end", self.index, text=self.index, values=(lastname, firstname)
+            "",
+            "end",
+            self.index,
+            text=self.index,
+            values=(lastname, firstname),
         )
         self.index += 1
 

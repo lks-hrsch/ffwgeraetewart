@@ -39,11 +39,11 @@ class PsaGUI:
 
         self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
         self.init_alter_frame()
-        self.alterframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
         self.initPrintFrame()
-        self.printframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
     def init_treeview(self):
         # Columndefinition
@@ -60,10 +60,7 @@ class PsaGUI:
     def init_data(self):
         self.index = 1
         statement = (
-            select(db.Psa, db.Member)
-            .join(db.Member)
-            .filter(db.Member.deleted.is_(False))
-            .order_by(db.Member.lastname)
+            select(db.Psa, db.Member).join(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname)
         )
         for record in db.session.execute(statement).all():
             self.psatree.insert(
@@ -87,7 +84,9 @@ class PsaGUI:
 
     def init_alter_frame(self):
         alterbutton = tkinter.Button(
-            self.alterframe, text="Bearbeiten", command=self.commandOpenAlterView
+            self.alterframe,
+            text="Bearbeiten",
+            command=self.commandOpenAlterView,
         )
         alterbutton.pack()
 
@@ -120,7 +119,9 @@ class PsaGUI:
         printsinglememberbutton.grid(column=0, row=1, columnspan=2)
 
         printallmemberbutton = tkinter.Button(
-            self.printframe, text="Alle Mitglieder", command=self.commandPrintAll
+            self.printframe,
+            text="Alle Mitglieder",
+            command=self.commandPrintAll,
         )
         printallmemberbutton.grid(column=0, row=2, columnspan=2)
 
@@ -238,10 +239,7 @@ class PsaGUI:
         parameters = []
 
         statement = (
-            select(db.Psa, db.Member)
-            .join(db.Member)
-            .filter(db.Member.deleted.is_(False))
-            .order_by(db.Member.lastname)
+            select(db.Psa, db.Member).join(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname)
         )
         for record in db.session.execute(statement).all():
             param = {
