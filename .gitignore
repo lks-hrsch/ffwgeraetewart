@@ -16,3 +16,8 @@ reports/
 
 # MacOS Files
 .DS_Store
+
+# Files From Pyinstaller
+build/
+dist/
+main.spec
