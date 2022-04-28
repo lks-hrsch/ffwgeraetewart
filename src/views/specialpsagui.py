@@ -17,8 +17,8 @@ from sqlalchemy import select
 
 import src.models as db
 import src.template_processing as tp
-
-from .specialpsagui_helpers.specialpsatemplategui import \
+from src.pathes import out_path
+from src.views.specialpsagui_helpers.specialpsatemplategui import \
     SpecialPsaTemplateDialog
 
 """
@@ -220,9 +220,9 @@ class SpecialPsaGUI:
             tp.compose_specificpsa_with_path(parameters, template_path)
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "../reports/out.docx"))
+                subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("../reports/out.docx")
+                os.startfile(out_path)
         pass
 
     def commandOpenTemplateView(self):

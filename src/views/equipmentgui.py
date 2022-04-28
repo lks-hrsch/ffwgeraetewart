@@ -7,11 +7,12 @@ from tkinter import ttk
 
 from sqlalchemy import select, update
 
-import models as db
-import template_processing as tp
-
-from .equipmentgui_helpers.alterequipmentdialog import AlterEquipmentDialog
-from .equipmentgui_helpers.equipmenttypes import EquipmentTypes
+import src.models as db
+import src.template_processing as tp
+from src.pathes import out_path
+from src.views.equipmentgui_helpers.alterequipmentdialog import \
+    AlterEquipmentDialog
+from src.views.equipmentgui_helpers.equipmenttypes import EquipmentTypes
 
 treeviewColumns = (
     "Gerätename",
@@ -253,9 +254,9 @@ class EquipmentGUI:
             tp.compose_multiple_equipment([parameterEquipment])
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "../reports/out.docx"))
+                subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("../reports/out.docx")
+                os.startfile(out_path)
         pass
 
     def commandPrintSingleEquipmentBlanko(self):
@@ -277,9 +278,9 @@ class EquipmentGUI:
             tp.compose_multiple_equipment([parameterEquipment])
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "../reports/out.docx"))
+                subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("../reports/out.docx")
+                os.startfile(out_path)
         pass
 
     def commandPrintAllEquipments(self):
@@ -314,9 +315,9 @@ class EquipmentGUI:
         tp.compose_multiple_equipment(parameterEquipmentList)
 
         if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", "../reports/out.docx"))
+            subprocess.call(("open", out_path))
         elif platform.system() == "Windows":  # Windows
-            os.startfile("../reports/out.docx")
+            os.startfile(out_path)
         pass
 
     def commandPrintAllEquipmentsBlanko(self):
@@ -336,7 +337,7 @@ class EquipmentGUI:
         tp.compose_multiple_equipment(parameterEquipmentList)
 
         if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", "../reports/out.docx"))
+            subprocess.call(("open", out_path))
         elif platform.system() == "Windows":  # Windows
-            os.startfile("../reports/out.docx")
+            os.startfile(out_path)
         pass

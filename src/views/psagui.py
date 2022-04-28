@@ -9,8 +9,8 @@ from sqlalchemy import select, update
 
 import src.models as db
 import src.template_processing as tp
-
-from .psagui_helpers.alterpsadialog import AlterPsaDialog
+from src.pathes import out_path
+from src.views.psagui_helpers.alterpsadialog import AlterPsaDialog
 
 treeviewColumns = (
     "EinsatzkleidungJacke",
@@ -193,9 +193,9 @@ class PsaGUI:
             tp.compose_specificpsa_for_member(parameters, self.psatypecombobox.get())
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "../reports/out.docx"))
+                subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("../reports/out.docx")
+                os.startfile(out_path)
         pass
 
     def commandPrintWholeMember(self):
@@ -230,9 +230,9 @@ class PsaGUI:
             tp.compose_wholepsa(parameters)
 
             if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", "../reports/out.docx"))
+                subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
-                os.startfile("../reports/out.docx")
+                os.startfile(out_path)
         pass
 
     def commandPrintAll(self):
@@ -261,7 +261,7 @@ class PsaGUI:
         tp.compose_wholepsa(parameters)
 
         if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", "../reports/out.docx"))
+            subprocess.call(("open", out_path))
         elif platform.system() == "Windows":  # Windows
-            os.startfile("../reports/out.docx")
+            os.startfile(out_path)
         pass
