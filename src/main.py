@@ -13,22 +13,32 @@ class MainGUI:
         self.frame.pack()
 
         buttonMemberGui = tkinter.Button(
-            self.frame, text="Mitglieder", command=self.showMemberGUI, padx=5, pady=5
+            self.frame,
+            text="Mitglieder",
+            command=self.showMemberGUI,
+            padx=5,
+            pady=5,
         )
         buttonMemberGui.pack()
 
-        buttonPsaGui = tkinter.Button(
-            self.frame, text="PSA", command=self.showPsaGUI, padx=5, pady=5
-        )
+        buttonPsaGui = tkinter.Button(self.frame, text="PSA", command=self.showPsaGUI, padx=5, pady=5)
         buttonPsaGui.pack()
 
         buttonSpecialPsaGui = tkinter.Button(
-            self.frame, text="Special PSA", command=self.showSpecialPsaGUI, padx=5, pady=5
+            self.frame,
+            text="Special PSA",
+            command=self.showSpecialPsaGUI,
+            padx=5,
+            pady=5,
         )
         buttonSpecialPsaGui.pack()
 
         buttonEquipmentGui = tkinter.Button(
-            self.frame, text="Geräte", command=self.showEquipmentGUI, padx=5, pady=5
+            self.frame,
+            text="Geräte",
+            command=self.showEquipmentGUI,
+            padx=5,
+            pady=5,
         )
         buttonEquipmentGui.pack()
         pass

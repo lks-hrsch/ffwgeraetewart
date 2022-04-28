@@ -12,12 +12,14 @@ import platform
 import subprocess
 import tkinter
 from tkinter import ttk
+
 from sqlalchemy import select
 
 import src.models as db
-
-from .specialpsagui_helpers.specialpsatemplategui import SpecialPsaTemplateDialog
 import src.template_processing as tp
+
+from .specialpsagui_helpers.specialpsatemplategui import \
+    SpecialPsaTemplateDialog
 
 """
  TODO Create new Template
@@ -34,7 +36,7 @@ treeviewColumns = (
     "Gerätename",
     "Eigenschaften",
     "dateCreated",
-    "dateEdited"
+    "dateEdited",
 )
 
 
@@ -47,11 +49,11 @@ class SpecialPsaGUI:
         self.special_psa_tree = ttk.Treeview(self.window)
         self.init_treeview()
         self.init_treeview_data()
-        self.special_psa_tree.pack(fill="both", expand="yes", side=tkinter.TOP)
+        self.special_psa_tree.pack(fill="both", expand=1, side=tkinter.TOP)
 
         self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.propertyframe = tkinter.LabelFrame(self.window, text="Eigenschaften")
         self.propertys = None
@@ -59,19 +61,19 @@ class SpecialPsaGUI:
 
         self.templateframe = tkinter.LabelFrame(self.window, text="Vorlagen")
         self.init_template_frame()
-        self.templateframe.pack(fill="both", expand="yes", side=tkinter.RIGHT)
+        self.templateframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
 
         self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
         self.initPrintFrame()
-        self.printframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.deleteframe = tkinter.LabelFrame(self.window, text="Löschen")
         self.initDeleteFrame()
-        self.deleteframe.pack(fill="both", expand="yes", side=tkinter.RIGHT)
+        self.deleteframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
 
         self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
         self.initAlterFrame()
-        self.alterframe.pack(fill="both", expand="yes", side=tkinter.RIGHT)
+        self.alterframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
 
     def init_treeview(self):
         # Columndefinition
@@ -87,10 +89,7 @@ class SpecialPsaGUI:
 
     def init_treeview_data(self):
         self.index = 1
-        statement = (
-            select(db.SpecialPsa)
-            .filter(db.SpecialPsa.deleted.is_(False))
-        )
+        statement = select(db.SpecialPsa).filter(db.SpecialPsa.deleted.is_(False))
         for record in db.session.execute(statement).all():
             self.special_psa_tree.insert(
                 "",
@@ -102,7 +101,7 @@ class SpecialPsaGUI:
                     record["SpecialPsa"].number,
                     record["SpecialPsa"].propertys,
                     record["SpecialPsa"].dateCreated,
-                    record["SpecialPsa"].dateEdited
+                    record["SpecialPsa"].dateEdited,
                 ),
             )
             self.index += 1
@@ -132,30 +131,23 @@ class SpecialPsaGUI:
             self.property_entrys.append(entry)
             row += 1
 
-        self.propertyframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.propertyframe.pack(fill="both", expand=1, side=tkinter.LEFT)
         pass
 
     def initAddFrame(self):
-        types = db.session.execute(
-            select(db.SpecialPsaTemplates.type).order_by(db.SpecialPsaTemplates.type)
-        ).all()
+        types = db.session.execute(select(db.SpecialPsaTemplates.type).order_by(db.SpecialPsaTemplates.type)).all()
         types = [x[0] for x in types]
 
         tkinter.Label(self.addframe, text="Typ").grid(column=0, row=0)
-        self.typecombobox = ttk.Combobox(
-            self.addframe,
-            values=types
-        )
-        self.typecombobox.bind('<<ComboboxSelected>>', self.update_propertys)
+        self.typecombobox = ttk.Combobox(self.addframe, values=types)
+        self.typecombobox.bind("<<ComboboxSelected>>", self.update_propertys)
         self.typecombobox.grid(column=1, row=0)
 
         tkinter.Label(self.addframe, text="Name").grid(column=0, row=1)
         self.nameentry = tkinter.Entry(self.addframe)
         self.nameentry.grid(column=1, row=1)
 
-        addbutton = tkinter.Button(
-            self.addframe, text="Hinzufügen", command=self.commandAddToTreeview
-        )
+        addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=2, columnspan=2)
         pass
 
@@ -175,7 +167,9 @@ class SpecialPsaGUI:
 
     def init_template_frame(self):
         alterbutton = tkinter.Button(
-            self.templateframe, text="Bearbeiten", command=self.commandOpenTemplateView
+            self.templateframe,
+            text="Bearbeiten",
+            command=self.commandOpenTemplateView,
         )
         alterbutton.pack()
         pass
@@ -202,7 +196,7 @@ class SpecialPsaGUI:
                 special_psa.number,
                 special_psa.propertys,
                 special_psa.dateCreated,
-                special_psa.dateEdited
+                special_psa.dateEdited,
             ),
         )
         self.index += 1
@@ -216,7 +210,9 @@ class SpecialPsaGUI:
         if len(selection) == 1:
             equipment = self.special_psa_tree.item(selection[0])
             template_path = db.session.execute(
-                select(db.SpecialPsaTemplates.templatePath).filter(db.SpecialPsaTemplates.type == equipment["values"][0])
+                select(db.SpecialPsaTemplates.templatePath).filter(
+                    db.SpecialPsaTemplates.type == equipment["values"][0]
+                )
             ).one_or_none()
             template_path = template_path[0]
 
@@ -232,4 +228,3 @@ class SpecialPsaGUI:
     def commandOpenTemplateView(self):
         ret = SpecialPsaTemplateDialog(self.window).show()
         pass
-

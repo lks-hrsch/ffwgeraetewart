@@ -28,13 +28,13 @@ class AlterEquipmentDialog:
 
         self.detailsframe = tkinter.LabelFrame(self.window, text="Details")
         self.initDetailsFrame()
-        self.detailsframe.pack(fill="both", expand="yes")
+        self.detailsframe.pack(fill="both", expand=1)
 
-        self.checkstree.pack(fill="both", expand="yes")
+        self.checkstree.pack(fill="both", expand=1)
 
         self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         # TODO löschen von Checks noch nicht möglich
         # TODO Bearbeiten von checks noch nicht möglich
@@ -102,17 +102,13 @@ class AlterEquipmentDialog:
         self.testvisioncombobox = ttk.Combobox(self.addframe, values=["i.O.", "n.i.O."])
         self.testvisioncombobox.grid(column=1, row=2)
 
-        self.testfunctioncombobox = ttk.Combobox(
-            self.addframe, values=["i.O.", "n.i.O."]
-        )
+        self.testfunctioncombobox = ttk.Combobox(self.addframe, values=["i.O.", "n.i.O."])
         self.testfunctioncombobox.grid(column=1, row=3)
 
         self.testerentry = tkinter.Entry(self.addframe)
         self.testerentry.grid(column=1, row=4)
 
-        addbutton = tkinter.Button(
-            self.addframe, text="Hinzufügen", command=self.commandAddToTreeview
-        )
+        addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=2, row=0, rowspan=(iter + 1))
 
     def commandAddToTreeview(self):

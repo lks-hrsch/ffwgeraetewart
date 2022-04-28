@@ -47,11 +47,11 @@ class AlterPsaDialog:
 
         self.dataframe = tkinter.LabelFrame(self.window, text="Daten")
         self.initDataFrame()
-        self.dataframe.pack(fill="both", expand="yes")
+        self.dataframe.pack(fill="both", expand=1)
 
         self.buttonframe = tkinter.LabelFrame(self.window, text="Buttons")
         self.initButtonFrame()
-        self.buttonframe.pack(fill="both", expand="yes")
+        self.buttonframe.pack(fill="both", expand=1)
 
     def initDataFrame(self):
         self.entrys = []
@@ -65,12 +65,12 @@ class AlterPsaDialog:
             iter += 1
 
     def initButtonFrame(self):
-        tkinter.Button(
-            self.buttonframe, text="Abbruch", command=self.commandAbord
-        ).pack(fill="both", expand="yes", side=tkinter.LEFT)
-        tkinter.Button(
-            self.buttonframe, text="Speichern", command=self.commandSave
-        ).pack(fill="both", expand="yes", side=tkinter.LEFT)
+        tkinter.Button(self.buttonframe, text="Abbruch", command=self.commandAbord).pack(
+            fill="both", expand=1, side=tkinter.LEFT
+        )
+        tkinter.Button(self.buttonframe, text="Speichern", command=self.commandSave).pack(
+            fill="both", expand=1, side=tkinter.LEFT
+        )
 
     def commandAbord(self):
         self.ret = self.propertys

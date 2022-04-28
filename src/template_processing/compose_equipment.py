@@ -34,9 +34,7 @@ def compose_single_equipment(parameters: dict):
         for iterChecks in range(1, 10):
             for check, iter in zip(checkRow, range(0, 5)):
                 try:
-                    parameterChecks[check + str(iterChecks)] = parameters["checks"][
-                        iterChecks - 1
-                    ][iter]
+                    parameterChecks[check + str(iterChecks)] = parameters["checks"][iterChecks - 1][iter]
                 except IndexError:
                     parameterChecks[check + str(iterChecks)] = ""
         find_and_replace(doc, parameterChecks)
@@ -47,9 +45,9 @@ def compose_single_equipment(parameters: dict):
         for iterChecks in range(1, 10):
             for check, iter in zip(checkRow, range(0, 5)):
                 try:
-                    parameterChecks[check + str(iterChecks)] = parameters["checks"][
-                        ((1 - 1) * 9) + (iterChecks - 1)
-                    ][iter]
+                    parameterChecks[check + str(iterChecks)] = parameters["checks"][((1 - 1) * 9) + (iterChecks - 1)][
+                        iter
+                    ]
                 except IndexError:
                     parameterChecks[check + str(iterChecks)] = ""
         find_and_replace(doc, parameterChecks)

@@ -11,18 +11,18 @@ treeviewColumns = (
     "templatePath",
     "propertyKeys",
     "dateCreated",
-    "dateEdited"
+    "dateEdited",
 )
 
 
-def join_array(array):
+def join_array(array: list[str]) -> str:
     """
     Join text.
 
     :param array:
     :return:
     """
-    return ' '.join(array)
+    return " ".join(array)
 
 
 class SpecialPsaTemplateDialog:
@@ -35,19 +35,19 @@ class SpecialPsaTemplateDialog:
         self.template_tree = ttk.Treeview(self.window)
         self.init_treeview()
         self.init_treeview_data()
-        self.template_tree.pack(fill="both", expand="yes")
+        self.template_tree.pack(fill="both", expand=1)
 
         self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
         self.initAlterFrame()
-        self.alterframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.deleteframe = tkinter.LabelFrame(self.window, text="Löschen")
         self.initDeleteFrame()
-        self.deleteframe.pack(fill="both", expand="yes", side=tkinter.LEFT)
+        self.deleteframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
     def show(self):
         self.window.deiconify()
@@ -68,10 +68,7 @@ class SpecialPsaTemplateDialog:
 
     def init_treeview_data(self):
         self.index = 1
-        statement = (
-            select(db.SpecialPsaTemplates)
-            .filter(db.SpecialPsaTemplates.deleted.is_(False))
-        )
+        statement = select(db.SpecialPsaTemplates).filter(db.SpecialPsaTemplates.deleted.is_(False))
         for record in db.session.execute(statement).all():
             self.template_tree.insert(
                 "",
@@ -83,15 +80,13 @@ class SpecialPsaTemplateDialog:
                     record["SpecialPsaTemplates"].templatePath,
                     record["SpecialPsaTemplates"].propertyKeys,
                     record["SpecialPsaTemplates"].dateCreated,
-                    record["SpecialPsaTemplates"].dateEdited
+                    record["SpecialPsaTemplates"].dateEdited,
                 ),
             )
             self.index += 1
 
     def initAddFrame(self):
-        add_button = tkinter.Button(
-            self.addframe, text="Hinzufügen", command=self.commandAddToTreeview
-        )
+        add_button = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         add_button.pack()
         pass
 
@@ -118,7 +113,7 @@ class SpecialPsaTemplateDialog:
                 dateCreated=datetime.date.today(),
                 dateEdited=datetime.date.today(),
                 deleted=False,
-            )
+            ),
         ]
 
         for template in templates:
@@ -132,7 +127,7 @@ class SpecialPsaTemplateDialog:
                     template.templatePath,
                     template.propertyKeys,
                     template.dateCreated,
-                    template.dateEdited
+                    template.dateEdited,
                 ),
             )
             db.session.add(template)

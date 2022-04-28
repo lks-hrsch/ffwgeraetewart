@@ -5,5 +5,5 @@ run:
 	python src/main.py
 	
 lint:
-	isort .
 	black .
+	isort .
