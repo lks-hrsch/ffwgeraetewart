@@ -5,6 +5,7 @@ from tkinter import ttk
 from sqlalchemy import update
 
 import src.models as db
+from src.views.uielements import entry_with_label
 from src.views.viewprotocol import ViewProtocol
 
 
@@ -27,10 +28,6 @@ class MemberGUI(ViewProtocol):
         self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.deleteframe = tkinter.LabelFrame(self, text="Löschen")
-        self.initDeleteFrame()
-        self.deleteframe.pack(fill="both", expand=1, side=tkinter.LEFT)
-
     def initTreeview(self):
         # Columndefinition
         self.membertree["columns"] = ("Nachname", "Vorname")
@@ -44,29 +41,21 @@ class MemberGUI(ViewProtocol):
         self.membertree.heading("Vorname", text="Vorname", anchor=tkinter.W)
 
     def initData(self):
-        self.index = 1
         for record in db.session.query(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname):
             self.membertree.insert(
                 "",
                 "end",
-                self.index,
+                record.id,
                 text=record.id,
                 values=(record.lastname, record.firstname),
             )
-            self.index += 1
 
     def initAddFrame(self):
-        firstnamelabel = tkinter.Label(self.addframe, text="Vorname")
-        firstnamelabel.grid(column=0, row=0)
-        self.firstnameentry = tkinter.Entry(self.addframe)
-        self.firstnameentry.grid(column=1, row=0)
-        lastnamelabel = tkinter.Label(self.addframe, text="Nachname")
-        lastnamelabel.grid(column=0, row=1)
-        self.lastnameentry = tkinter.Entry(self.addframe)
-        self.lastnameentry.grid(column=1, row=1)
+        self.firstnameentry = entry_with_label(self.addframe, "Vorname", 0, 0)
+        self.lastnameentry = entry_with_label(self.addframe, "Nachname", 0, 1)
 
         addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
-        addbutton.grid(column=0, row=2, columnspan=2)
+        addbutton.grid(column=0, row=2)
 
     def initAlterFrame(self):
         alterbutton = tkinter.Button(
@@ -83,9 +72,8 @@ class MemberGUI(ViewProtocol):
         )
         savebutton.pack()
 
-    def initDeleteFrame(self):
         deletebutton = tkinter.Button(
-            self.deleteframe,
+            self.alterframe,
             text="Löschen",
             command=self.commandDeleteFromTreeview,
         )
@@ -94,15 +82,16 @@ class MemberGUI(ViewProtocol):
     def commandAddToTreeview(self):
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
+        index = db.session.query(db.Member.id).order_by(db.Member.id.desc()).first()[0] + 1
 
         newPsa = db.Psa(
-            mid=self.index,
+            mid=index,
             dateCreated=datetime.date.today(),
             dateEdited=datetime.date.today(),
             deleted=False,
         )
         newMember = db.Member(
-            id=self.index,
+            id=index,
             firstname=firstname,
             lastname=lastname,
             dateCreated=datetime.date.today(),
@@ -118,11 +107,10 @@ class MemberGUI(ViewProtocol):
         self.membertree.insert(
             "",
             "end",
-            self.index,
-            text=self.index,
+            index,
+            text=index,
             values=(lastname, firstname),
         )
-        self.index += 1
 
     def commandDeleteFromTreeview(self):
         selection = self.membertree.selection()

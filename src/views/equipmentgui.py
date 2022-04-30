@@ -13,6 +13,7 @@ from src.pathes import out_path
 from src.views.equipmentgui_helpers.alterequipmentdialog import \
     AlterEquipmentDialog
 from src.views.equipmentgui_helpers.equipmenttypes import EquipmentTypes
+from src.views.uielements import entry_with_label
 from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
@@ -43,8 +44,6 @@ class EquipmentGUI(ViewProtocol):
         self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        # TODO Delete noch nicht möglich
-
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
         self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
@@ -62,22 +61,19 @@ class EquipmentGUI(ViewProtocol):
             self.equipmenttree.heading(column, text=column)
 
     def initData(self):
-        self.index = 1
         # init Parents
         for rubrik in EquipmentTypes:
             self.equipmenttree.insert("", "end", rubrik.value, text=rubrik.name)
-            self.index += 1
 
         # init Data
         for record in db.session.query(db.Equipment).filter(db.Equipment.deleted.is_(False)).order_by(db.Equipment.id):
             self.equipmenttree.insert(
                 record.category,
                 "end",
-                self.index,
+                record.id,
                 text=record.id,
                 values=(record.name, record.vendor, record.year, "", ""),
             )
-            self.index += 1
 
     def initAddFrame(self):
         tkinter.Label(self.addframe, text="Rubrik").grid(column=0, row=0)
@@ -91,21 +87,10 @@ class EquipmentGUI(ViewProtocol):
         )
         self.equipmentcombobox.grid(column=1, row=0)
 
-        tkinter.Label(self.addframe, text="ID").grid(column=0, row=1)
-        self.identry = tkinter.Entry(self.addframe)
-        self.identry.grid(column=1, row=1)
-
-        tkinter.Label(self.addframe, text="Name").grid(column=0, row=2)
-        self.nameentry = tkinter.Entry(self.addframe)
-        self.nameentry.grid(column=1, row=2)
-
-        tkinter.Label(self.addframe, text="Hersteller").grid(column=0, row=3)
-        self.vendorentry = tkinter.Entry(self.addframe)
-        self.vendorentry.grid(column=1, row=3)
-
-        tkinter.Label(self.addframe, text="Jahr").grid(column=0, row=4)
-        self.yearentry = tkinter.Entry(self.addframe)
-        self.yearentry.grid(column=1, row=4)
+        self.identry = entry_with_label(self.addframe, "ID", 0, 1, 2)
+        self.nameentry = entry_with_label(self.addframe, "Name", 0, 2, 2)
+        self.vendorentry = entry_with_label(self.addframe, "Hersteller", 0, 3, 2)
+        self.yearentry = entry_with_label(self.addframe, "Jahr", 0, 4, 2)
 
         addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=5, columnspan=2)
@@ -170,7 +155,7 @@ class EquipmentGUI(ViewProtocol):
         self.equipmenttree.insert(
             equipmenttype,
             "end",
-            self.index,
+            id,
             text=id,
             values=(name, vendor, year, "", ""),
         )
@@ -191,7 +176,6 @@ class EquipmentGUI(ViewProtocol):
 
         self.identry.delete(0, "end")
         self.nameentry.delete(0, "end")
-        self.index += 1
         pass
 
     def commandDeleteFromTreeview(self):
@@ -233,8 +217,13 @@ class EquipmentGUI(ViewProtocol):
                 .filter(db.Equipment.id.is_(item["text"]))
                 .filter(db.Equipment.deleted.is_(False))
             )
+
+            data = db.session.execute(statement).all()
+            if len(data) == 0:
+                return self.commandPrintSingleEquipmentBlanko()
+
             first = True
-            for equipment, equipmentcheck in db.session.execute(statement).all():
+            for equipment, equipmentcheck in data:
                 if first:
                     parameterEquipment["devicename"] = equipment.name
                     parameterEquipment["devicenumber"] = equipment.id
