@@ -112,7 +112,7 @@ class AlterEquipmentDialog:
         addbutton.grid(column=2, row=0, rowspan=(iter + 1))
 
     def commandAddToTreeview(self):
-        testdate = self.testdateentry.get()
+        test_date = self.testdateentry.get()
         remark = self.remarkentry.get()
         testvision = self.testvisioncombobox.get()
         testfunction = self.testfunctioncombobox.get()
@@ -121,7 +121,7 @@ class AlterEquipmentDialog:
         newEquipmentCheck = db.EquipmentChecks(
             id=self.index,
             eid=self.propertys[0],
-            testdate=testdate,
+            test_date=test_date,
             remark=remark,
             testVision=testvision,
             testFunction=testfunction,
@@ -139,7 +139,7 @@ class AlterEquipmentDialog:
             "end",
             self.index,
             text="",
-            values=(testdate, remark, testvision, testfunction, tester),
+            values=(test_date, remark, testvision, testfunction, tester),
         )
 
         self.index += 1

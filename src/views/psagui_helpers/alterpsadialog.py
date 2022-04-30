@@ -1,5 +1,7 @@
 import tkinter
 
+from src.views.uielements import entry_with_label
+
 treeviewColumns = (
     "EinsatzkleidungJacke",
     "EinsatzkleidungHose",
@@ -46,23 +48,20 @@ class AlterPsaDialog:
         self.ret = self.propertys
 
         self.dataframe = tkinter.LabelFrame(self.window, text="Daten")
-        self.initDataFrame()
+        self.entrys = self.initDataFrame()
         self.dataframe.pack(fill="both", expand=1)
 
         self.buttonframe = tkinter.LabelFrame(self.window, text="Buttons")
         self.initButtonFrame()
         self.buttonframe.pack(fill="both", expand=1)
 
-    def initDataFrame(self):
-        self.entrys = []
-        iter = 0
-        for field in treeviewColumns:
-            tkinter.Label(self.dataframe, text=field).grid(column=0, row=iter)
-            entry = tkinter.Entry(self.dataframe)
-            entry.insert(0, self.propertys[iter])
-            entry.grid(column=1, row=iter)
-            self.entrys.append(entry)
-            iter += 1
+    def initDataFrame(self) -> list[tkinter.Entry]:
+        entrys: list[tkinter.Entry] = []
+        for index, field in enumerate(treeviewColumns):
+            entry = entry_with_label(self.dataframe, field, 0, index, 2)
+            entry.insert(0, self.propertys[index])  # type: ignore
+            entrys.append(entry)
+        return entrys
 
     def initButtonFrame(self):
         tkinter.Button(self.buttonframe, text="Abbruch", command=self.commandAbord).pack(

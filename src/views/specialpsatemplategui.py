@@ -1,10 +1,13 @@
 import datetime
+import os
 import tkinter
 from tkinter import ttk
 
 from sqlalchemy import select
 
 import src.models as db
+from src.pathes import main_path
+from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
     "type",
@@ -25,34 +28,28 @@ def join_array(array: list[str]) -> str:
     return " ".join(array)
 
 
-class SpecialPsaTemplateDialog:
+class SpecialPsaTemplateGUI(ViewProtocol):
     def __init__(self, parent):
-        self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title("Templateverwaltung für PSA Kleidung")
-        self.ret = None
+        super().__init__(parent)
 
-        self.template_tree = ttk.Treeview(self.window)
+        self.parent = parent
+
+        self.template_tree = ttk.Treeview(self)
         self.init_treeview()
         self.init_treeview_data()
         self.template_tree.pack(fill="both", expand=1)
 
-        self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
+        self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.deleteframe = tkinter.LabelFrame(self.window, text="Löschen")
+        self.deleteframe = tkinter.LabelFrame(self, text="Löschen")
         self.initDeleteFrame()
         self.deleteframe.pack(fill="both", expand=1, side=tkinter.LEFT)
-
-    def show(self):
-        self.window.deiconify()
-        self.window.wait_window()
-        return self.ret
 
     def init_treeview(self):
         # Columndefinition
@@ -100,7 +97,7 @@ class SpecialPsaTemplateDialog:
         templates = [
             db.SpecialPsaTemplates(
                 type="Wathosen",
-                templatePath="templates/template_wathose.docx",
+                templatePath=os.path.join(main_path, "templates/template_wathose.docx"),
                 propertyKeys=join_array(["year", "number", "lastname", "firstname"]),
                 dateCreated=datetime.date.today(),
                 dateEdited=datetime.date.today(),
@@ -108,7 +105,7 @@ class SpecialPsaTemplateDialog:
             ),
             db.SpecialPsaTemplates(
                 type="Schnittschutzhose",
-                templatePath="templates/template_schnittschutzhose.docx",
+                templatePath=os.path.join(main_path, "templates/template_schnittschutzhose.docx"),
                 propertyKeys=join_array(["year", "number", "cyear", "lastname", "firstname"]),
                 dateCreated=datetime.date.today(),
                 dateEdited=datetime.date.today(),

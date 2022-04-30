@@ -5,14 +5,18 @@ from src.views.equipmentgui import EquipmentGUI
 from src.views.membergui import MemberGUI
 from src.views.psagui import PsaGUI
 from src.views.specialpsagui import SpecialPsaGUI
+from src.views.specialpsatemplategui import SpecialPsaTemplateGUI
 from src.views.viewprotocol import ViewProtocol
 
 
 class MainGUI(tkinter.Tk):
-    frames: dict[str, Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[EquipmentGUI]] = {
+    frames: dict[
+        str, Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[EquipmentGUI]
+    ] = {
         "MemberGUI": MemberGUI,
         "PsaGUI": PsaGUI,
         "SpecialPsaGUI": SpecialPsaGUI,
+        "SpecialPsaTemplateGUI": SpecialPsaTemplateGUI,
         "EquipmentGUI": EquipmentGUI,
     }
 
@@ -31,6 +35,7 @@ class MainGUI(tkinter.Tk):
         psa_menu = tkinter.Menu(menubar)
         psa_menu.add_command(label="Normale PSA", command=lambda: self.show_frame("PsaGUI"))
         psa_menu.add_command(label="Spezielle PSA", command=lambda: self.show_frame("SpecialPsaGUI"))
+        psa_menu.add_command(label="Spezielle PSA Vorlagen", command=lambda: self.show_frame("SpecialPsaTemplateGUI"))
 
         equipment_menu = tkinter.Menu(menubar)
         equipment_menu.add_command(label="Anzeigen", command=lambda: self.show_frame("EquipmentGUI"))
@@ -54,9 +59,9 @@ class MainGUI(tkinter.Tk):
         except AttributeError as ex:
             pass
 
-        view_class: Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[EquipmentGUI] | None = self.frames.get(
-            page_name
-        )
+        view_class: Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[
+            EquipmentGUI
+        ] | None = self.frames.get(page_name)
         self.frame: ViewProtocol = view_class(parent=self.container)  # type: ignore
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.tkraise()

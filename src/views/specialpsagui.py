@@ -18,8 +18,7 @@ from sqlalchemy import select
 import src.models as db
 import src.template_processing as tp
 from src.pathes import out_path
-from src.views.specialpsagui_helpers.specialpsatemplategui import \
-    SpecialPsaTemplateDialog
+from src.views.uielements import entry_with_label
 from src.views.viewprotocol import ViewProtocol
 
 """
@@ -53,27 +52,19 @@ class SpecialPsaGUI(ViewProtocol):
 
         self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.addframe.pack(fill="both", expand=1)
 
         self.propertyframe = tkinter.LabelFrame(self, text="Eigenschaften")
         self.propertys = None
         self.property_entrys = []
 
-        self.templateframe = tkinter.LabelFrame(self, text="Vorlagen")
-        self.init_template_frame()
-        self.templateframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
-
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
-        self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
-
-        self.deleteframe = tkinter.LabelFrame(self, text="Löschen")
-        self.initDeleteFrame()
-        self.deleteframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
+        self.printframe.pack(fill="both", expand=1)
 
         self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.initAlterFrame()
-        self.alterframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
+        self.alterframe.pack(fill="both", expand=1)
 
     def init_treeview(self):
         # Columndefinition
@@ -131,7 +122,7 @@ class SpecialPsaGUI(ViewProtocol):
             self.property_entrys.append(entry)
             row += 1
 
-        self.propertyframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.propertyframe.pack(fill="both", expand=1)
         pass
 
     def initAddFrame(self):
@@ -143,9 +134,7 @@ class SpecialPsaGUI(ViewProtocol):
         self.typecombobox.bind("<<ComboboxSelected>>", self.update_propertys)
         self.typecombobox.grid(column=1, row=0)
 
-        tkinter.Label(self.addframe, text="Name").grid(column=0, row=1)
-        self.nameentry = tkinter.Entry(self.addframe)
-        self.nameentry.grid(column=1, row=1)
+        self.nameentry = entry_with_label(self.addframe, "Name", 0, 1, 2)
 
         addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=2, columnspan=2)
@@ -164,15 +153,6 @@ class SpecialPsaGUI(ViewProtocol):
             command=self.commandPrintSingleEquipment,
         )
         printsingleequipmentbutton.pack()
-
-    def init_template_frame(self):
-        alterbutton = tkinter.Button(
-            self.templateframe,
-            text="Bearbeiten",
-            command=self.commandOpenTemplateView,
-        )
-        alterbutton.pack()
-        pass
 
     def commandAddToTreeview(self):
         propertys_dict = dict(zip(self.propertys, [x.get() for x in self.property_entrys]))
@@ -223,8 +203,4 @@ class SpecialPsaGUI(ViewProtocol):
                 subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
                 os.startfile(out_path)
-        pass
-
-    def commandOpenTemplateView(self):
-        ret = SpecialPsaTemplateDialog(self).show()
         pass
