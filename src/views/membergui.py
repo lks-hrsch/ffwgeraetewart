@@ -5,29 +5,29 @@ from tkinter import ttk
 from sqlalchemy import update
 
 import src.models as db
+from src.views.viewprotocol import ViewProtocol
 
 
-class MemberGUI:
+class MemberGUI(ViewProtocol):
     def __init__(self, parent) -> None:
+        super().__init__(parent)
         self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title("Mitglieder")
-        self.membertree = ttk.Treeview(self.window)
+        self.membertree = ttk.Treeview(self)
 
         self.initTreeview()
         self.initData()
 
-        self.membertree.pack()
+        self.membertree.pack(fill="both", expand=1, side=tkinter.TOP)
 
-        self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
+        self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.deleteframe = tkinter.LabelFrame(self.window, text="Löschen")
+        self.deleteframe = tkinter.LabelFrame(self, text="Löschen")
         self.initDeleteFrame()
         self.deleteframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 

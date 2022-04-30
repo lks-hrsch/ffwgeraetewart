@@ -20,6 +20,7 @@ import src.template_processing as tp
 from src.pathes import out_path
 from src.views.specialpsagui_helpers.specialpsatemplategui import \
     SpecialPsaTemplateDialog
+from src.views.viewprotocol import ViewProtocol
 
 """
  TODO Create new Template
@@ -40,38 +41,37 @@ treeviewColumns = (
 )
 
 
-class SpecialPsaGUI:
+class SpecialPsaGUI(ViewProtocol):
     def __init__(self, parent) -> None:
+        super().__init__(parent)
         self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title("Special - PSA")
 
-        self.special_psa_tree = ttk.Treeview(self.window)
+        self.special_psa_tree = ttk.Treeview(self)
         self.init_treeview()
         self.init_treeview_data()
         self.special_psa_tree.pack(fill="both", expand=1, side=tkinter.TOP)
 
-        self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
+        self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.propertyframe = tkinter.LabelFrame(self.window, text="Eigenschaften")
+        self.propertyframe = tkinter.LabelFrame(self, text="Eigenschaften")
         self.propertys = None
         self.property_entrys = []
 
-        self.templateframe = tkinter.LabelFrame(self.window, text="Vorlagen")
+        self.templateframe = tkinter.LabelFrame(self, text="Vorlagen")
         self.init_template_frame()
         self.templateframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
 
-        self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
+        self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
         self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.deleteframe = tkinter.LabelFrame(self.window, text="Löschen")
+        self.deleteframe = tkinter.LabelFrame(self, text="Löschen")
         self.initDeleteFrame()
         self.deleteframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
 
-        self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.RIGHT)
 
@@ -226,5 +226,5 @@ class SpecialPsaGUI:
         pass
 
     def commandOpenTemplateView(self):
-        ret = SpecialPsaTemplateDialog(self.window).show()
+        ret = SpecialPsaTemplateDialog(self).show()
         pass
