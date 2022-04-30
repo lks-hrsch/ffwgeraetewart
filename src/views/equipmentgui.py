@@ -13,6 +13,7 @@ from src.pathes import out_path
 from src.views.equipmentgui_helpers.alterequipmentdialog import \
     AlterEquipmentDialog
 from src.views.equipmentgui_helpers.equipmenttypes import EquipmentTypes
+from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
     "Gerätename",
@@ -23,29 +24,28 @@ treeviewColumns = (
 )
 
 
-class EquipmentGUI:
+class EquipmentGUI(ViewProtocol):
     def __init__(self, parent) -> None:
+        super().__init__(parent)
         self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title("Geräte")
-        self.equipmenttree = ttk.Treeview(self.window)
+        self.equipmenttree = ttk.Treeview(self)
 
         self.initTreeview()
         self.initData()
 
         self.equipmenttree.pack(fill="both", expand=1)
 
-        self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
+        self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         # TODO Delete noch nicht möglich
 
-        self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
+        self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
         self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
@@ -213,7 +213,7 @@ class EquipmentGUI:
         if len(selection) == 1:
             item = self.equipmenttree.item(selection)
             AlterEquipmentDialog(
-                self.window,
+                self,
                 item["text"],
                 item["values"][0],
                 item["values"][1],

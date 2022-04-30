@@ -11,6 +11,7 @@ import src.models as db
 import src.template_processing as tp
 from src.pathes import out_path
 from src.views.psagui_helpers.alterpsadialog import AlterPsaDialog
+from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
     "EinsatzkleidungJacke",
@@ -25,23 +26,22 @@ treeviewColumns = (
 )
 
 
-class PsaGUI:
+class PsaGUI(ViewProtocol):
     def __init__(self, parent) -> None:
+        super().__init__(parent)
         self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title("PSA")
-        self.psatree = ttk.Treeview(self.window)
+        self.psatree = ttk.Treeview(self)
 
         self.init_treeview()
         self.init_data()
 
         self.psatree.pack()
 
-        self.alterframe = tkinter.LabelFrame(self.window, text="Bearbeiten")
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.init_alter_frame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        self.printframe = tkinter.LabelFrame(self.window, text="Drucken")
+        self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
         self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
@@ -130,7 +130,7 @@ class PsaGUI:
         if len(selection) == 1:
             item = self.psatree.item(selection)
             ret = AlterPsaDialog(
-                self.window,
+                self,
                 item["text"],
                 item["values"][0],
                 item["values"][1],
