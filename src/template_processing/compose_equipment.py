@@ -30,7 +30,7 @@ def compose_single_equipment(parameters: dict):
     doc = docx.Document(ALL_DOCUMENTS["BaseEquipment"])
     find_and_replace(doc, parameters)
 
-    checkRow = ["testdate", "remark", "testVision", "testFunction", "tester"]
+    checkRow = ["test_date", "remark", "testVision", "testFunction", "tester"]
     if len(parameters["checks"]) <= 9:
         find_and_replace(doc, {"pagenumber": "1"})
         parameterChecks: dict = {}

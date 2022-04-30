@@ -9,7 +9,7 @@ class EquipmentChecks(BASE):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     eid = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("equipment.id"))
-    testdate = sqlalchemy.Column(sqlalchemy.String)
+    test_date = sqlalchemy.Column(sqlalchemy.String)
     remark = sqlalchemy.Column(sqlalchemy.String)
     testVision = sqlalchemy.Column(sqlalchemy.String)
     testFunction = sqlalchemy.Column(sqlalchemy.String)

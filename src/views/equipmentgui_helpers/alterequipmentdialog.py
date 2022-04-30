@@ -64,7 +64,7 @@ class AlterEquipmentDialog:
                 self.index,
                 text=record.id,
                 values=(
-                    record.testdate,
+                    record.test_date,
                     record.remark,
                     record.testVision,
                     record.testFunction,

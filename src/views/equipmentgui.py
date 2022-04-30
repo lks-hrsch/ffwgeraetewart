@@ -243,7 +243,7 @@ class EquipmentGUI:
                     parameterEquipment["checks"] = []
                     first = False
                 check = [
-                    equipmentcheck.testdate,
+                    equipmentcheck.test_date,
                     equipmentcheck.remark,
                     equipmentcheck.testVision,
                     equipmentcheck.testFunction,
@@ -302,7 +302,7 @@ class EquipmentGUI:
             )
             for record in db.session.execute(statement).all():
                 check = [
-                    record[0].testdate,
+                    record[0].test_date,
                     record[0].remark,
                     record[0].testVision,
                     record[0].testFunction,
