@@ -50,10 +50,9 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Create tarball
-        uses: master-atul/tar-action@v1.0.2
         run: |
           cd dist/
-          tar -czvf ffw-geraetewart-linux.tar.gz *
+          tar czvf ffw-geraetewart-linux.tar.gz *
 
       # upload linux artifact
       - name: upload linux artifact
