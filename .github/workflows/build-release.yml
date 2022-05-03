@@ -68,7 +68,7 @@ jobs:
       - name: Create tarball
         run: |
           cd dist/
-          tar czvf ${{ matrix.os }}.tar.gz *
+          tar -czvf ${{ matrix.os }}.tar.gz *
 
       # upload linux artifact
       - name: upload linux artifact
