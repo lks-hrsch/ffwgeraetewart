@@ -12,10 +12,35 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build-linux:
-    # The type of runner that the job will run on
+  create-release:
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      # create release
+      - name: create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: true
+          release_name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body_path: README.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macOS-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -36,23 +61,10 @@ jobs:
       - name: build
         run: make exe
 
-      # create release
-      - name: release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: true
-          release_name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-          body_path: README.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
       - name: Create tarball
         run: |
           cd dist/
-          tar czvf ffw-geraetewart-linux.tar.gz *
+          tar czvf ${{ matrix.os }}.tar.gz *
 
       # upload linux artifact
       - name: upload linux artifact
@@ -60,7 +72,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/ffw-geraetewart-linux.tar.gz
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./dist/${{ matrix.os }}.tar.gz
           asset_name: ffw-geraetewart-linux
           asset_content_type: application/gzip
