@@ -90,7 +90,7 @@ jobs:
         run: make exe
 
       - name: Create tarball
-        run: tar --force-local -czvf ${{ matrix.os }}.tar.gz dist/
+        run: tar -czvf ${{ matrix.os }}.tar.gz dist/*
 
       # upload linux artifact
       - name: upload linux artifact
