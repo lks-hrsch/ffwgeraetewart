@@ -12,15 +12,74 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build-linux:
-    # The type of runner that the job will run on
+  # This workflow contains a single job called "create-release"
+  create-release:
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v4.9
+
+      # https://stackoverflow.com/questions/58886293/getting-current-branch-and-commit-hash-in-github-action
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)" 
+
+      # for some debugging
+      - name: Echo out branch values
+        run: |
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.ref_name: ${{ github.ref_name }}"
+          echo "steps.branch-name.outputs.current_branch: ${{ steps.branch-name.outputs.current_branch }}"
+          echo "github.event.pull_request.title: ${{ github.event.pull_request.title }}"
+          echo "Branch: ${{ steps.vars.outputs.branch }}"
+          echo "Sha: ${{ steps.vars.outputs.sha_short }}"
+
+      # create release
+      - name: create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: true
+          release_name: ${{ steps.branch-name.outputs.current_branch }}-${{ steps.vars.outputs.sha_short }}
+          tag_name: ${{ steps.branch-name.outputs.current_branch }}/${{ steps.vars.outputs.sha_short }}
+          body_path: README.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
+    needs: create-release
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macOS-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+
+      # Setup right Python Version
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.10.4
 
       # install python requirements
       - name: install requirements
@@ -30,18 +89,8 @@ jobs:
       - name: build
         run: make exe
 
-      # create release
-      - name: release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: true
-          release_name: ${{ github.ref }}
-          tag_name: ${{ github.ref }}
-          body_path: README.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Create tarball
+        run: tar -czvf ${{ matrix.os }}.tar.gz dist/*
 
       # upload linux artifact
       - name: upload linux artifact
@@ -49,7 +98,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/main
-          asset_name: ffw-geraetewart-linux
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./${{ matrix.os }}.tar.gz
+          asset_name: ffw-geraetewart-${{ matrix.os }}.tar.gz
           asset_content_type: application/gzip
