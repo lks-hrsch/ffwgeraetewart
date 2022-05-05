@@ -3,7 +3,7 @@ import os
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.pathes import main_path
+from src.logic.pathes import main_path
 
 _DB_URI = f"sqlite:///{os.path.join(main_path, 'database.db')}"
 BASE = declarative_base()

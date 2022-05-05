@@ -17,7 +17,7 @@ from sqlalchemy import select
 
 import src.models as db
 import src.template_processing as tp
-from src.pathes import out_path
+from src.logic.pathes import out_path
 from src.views.uielements import entry_with_label
 from src.views.viewprotocol import ViewProtocol
 

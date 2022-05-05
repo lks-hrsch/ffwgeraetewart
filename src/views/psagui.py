@@ -9,7 +9,7 @@ from sqlalchemy import select, update
 
 import src.models as db
 import src.template_processing as tp
-from src.pathes import out_path
+from src.logic.pathes import out_path
 from src.views.psagui_helpers.alterpsadialog import AlterPsaDialog
 from src.views.viewprotocol import ViewProtocol
 

@@ -1,14 +1,15 @@
 import os
 import sys
 
-data_dir = "data"
 report_dir = "reports"
 out_file = "out.docx"
 
 # determine if application is a script file or frozen exe
 if getattr(sys, "frozen", False):
+    data_dir = "data"
     application_path = os.path.dirname(sys.executable)
 else:
+    data_dir = "../data"
     application_path = os.path.dirname(__file__)
 
 main_path = os.path.join(application_path, data_dir)

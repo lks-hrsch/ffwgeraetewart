@@ -1,12 +1,9 @@
-import datetime
-import os
 import tkinter
 from tkinter import ttk
 
 from sqlalchemy import select
 
 import src.models as db
-from src.pathes import main_path
 from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
@@ -16,16 +13,6 @@ treeviewColumns = (
     "dateCreated",
     "dateEdited",
 )
-
-
-def join_array(array: list[str]) -> str:
-    """
-    Join text.
-
-    :param array:
-    :return:
-    """
-    return " ".join(array)
 
 
 class SpecialPsaTemplateGUI(ViewProtocol):
@@ -94,41 +81,4 @@ class SpecialPsaTemplateGUI(ViewProtocol):
         pass
 
     def commandAddToTreeview(self):
-        templates = [
-            db.SpecialPsaTemplates(
-                type="Wathosen",
-                templatePath=os.path.join(main_path, "templates/template_wathose.docx"),
-                propertyKeys=join_array(["year", "number", "lastname", "firstname"]),
-                dateCreated=datetime.date.today(),
-                dateEdited=datetime.date.today(),
-                deleted=False,
-            ),
-            db.SpecialPsaTemplates(
-                type="Schnittschutzhose",
-                templatePath=os.path.join(main_path, "templates/template_schnittschutzhose.docx"),
-                propertyKeys=join_array(["year", "number", "cyear", "lastname", "firstname"]),
-                dateCreated=datetime.date.today(),
-                dateEdited=datetime.date.today(),
-                deleted=False,
-            ),
-        ]
-
-        for template in templates:
-            self.template_tree.insert(
-                "",
-                "end",
-                self.index,
-                text=self.index,
-                values=(
-                    template.type,
-                    template.templatePath,
-                    template.propertyKeys,
-                    template.dateCreated,
-                    template.dateEdited,
-                ),
-            )
-            db.session.add(template)
-            self.index += 1
-
-        db.session.commit()
         pass

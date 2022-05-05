@@ -5,7 +5,7 @@ import re
 import docx
 from docxcompose.composer import Composer
 
-from src.pathes import main_path, out_path
+from src.logic.pathes import main_path, out_path
 
 from .paragraph_replace_text import paragraph_replace_text
 
