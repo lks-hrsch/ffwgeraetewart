@@ -10,3 +10,8 @@ exe:
 lint:
 	black .
 	isort .
+
+clean:
+	rm -rf ./build
+	rm -rf ./dist
+	rm -rf ./main.spec
