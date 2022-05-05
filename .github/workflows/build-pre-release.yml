@@ -1,5 +1,5 @@
 # This is a workflow to build a release when merging to master
-name: build-release
+name: build-pre-release
 
 # Controls when the workflow will run
 on:
