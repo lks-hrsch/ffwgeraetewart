@@ -3,7 +3,7 @@ import os
 import docx
 from docxcompose.composer import Composer
 
-from src.pathes import main_path, out_path
+from src.logic.pathes import main_path, out_path
 
 ALL_DOCUMENTS = {
     "Arbeitskleidung": os.path.join(main_path, "templates/template_arbeitskleidung.docx"),

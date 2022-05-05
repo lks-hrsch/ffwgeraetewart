@@ -9,9 +9,8 @@ from sqlalchemy import select, update
 
 import src.models as db
 import src.template_processing as tp
-from src.pathes import out_path
-from src.views.equipmentgui_helpers.alterequipmentdialog import \
-    AlterEquipmentDialog
+from src.logic.pathes import out_path
+from src.views.equipmentgui_helpers.alterequipmentdialog import AlterEquipmentDialog
 from src.views.equipmentgui_helpers.equipmenttypes import EquipmentTypes
 from src.views.uielements import entry_with_label
 from src.views.viewprotocol import ViewProtocol
