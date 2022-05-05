@@ -82,7 +82,12 @@ class MemberGUI(ViewProtocol):
     def commandAddToTreeview(self):
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
-        index = db.session.query(db.Member.id).order_by(db.Member.id.desc()).first()[0] + 1
+        index = 100
+        try:
+            index = db.session.query(db.Member.id).order_by(db.Member.id.desc()).first()[0] + 1
+        except TypeError as ex:
+            # may the database is empty
+            pass
 
         newPsa = db.Psa(
             mid=index,
@@ -131,8 +136,8 @@ class MemberGUI(ViewProtocol):
         self.lastnameentry.delete(0, "end")
         if len(selection) == 1:
             item = self.membertree.item(selection)
-            self.firstnameentry.insert(0, item["values"][1])
-            self.lastnameentry.insert(0, item["values"][0])
+            self.firstnameentry.insert(0, item["values"][1])  # type: ignore
+            self.lastnameentry.insert(0, item["values"][0])  # type: ignore
 
     def commandSaveToTreeview(self):
         selection = self.membertree.selection()
