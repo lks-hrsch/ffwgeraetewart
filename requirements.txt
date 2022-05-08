@@ -6,3 +6,6 @@ docxcompose
 pyinstaller
 black
 isort
+
+# for git hooks
+pre-commit

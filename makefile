@@ -6,10 +6,13 @@ run:
 
 exe:
 	pyinstaller --onefile --windowed --clean src/main.py
-	
+
 lint:
 	black .
 	isort .
+
+hooks:
+	pre-commit install
 
 clean:
 	rm -rf ./build
