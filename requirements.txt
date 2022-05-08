@@ -1,3 +1,4 @@
+customtkinter
 sqlalchemy
 python-docx
 docxcompose
