@@ -5,7 +5,7 @@ from tkinter import ttk
 from sqlalchemy import update
 
 import src.models as db
-from src.views.uielements import entry_with_label
+from src.views.uielements import button_grid, button_pack, entry_with_label
 from src.views.viewprotocol import ViewProtocol
 
 
@@ -25,8 +25,16 @@ class MemberGUI(ViewProtocol):
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
-        self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+
+        buttons: dict = {
+            "Bearbeiten": [self.alterframe, self.commandGetFromTreeview],
+            "Speichern": [self.alterframe, self.commandSaveToTreeview],
+            "Löschen Gerät": [self.alterframe, self.commandDeleteFromTreeview],
+        }
+
+        for button_name, button_args in buttons.items():
+            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
 
     def initTreeview(self):
         # Columndefinition
@@ -54,30 +62,9 @@ class MemberGUI(ViewProtocol):
         self.firstnameentry = entry_with_label(self.addframe, "Vorname", 0, 0)
         self.lastnameentry = entry_with_label(self.addframe, "Nachname", 0, 1)
 
-        addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
-        addbutton.grid(column=0, row=2)
-
-    def initAlterFrame(self):
-        alterbutton = tkinter.Button(
-            self.alterframe,
-            text="Bearbeiten",
-            command=self.commandGetFromTreeview,
+        button_grid(
+            parent_frame=self.addframe, label_name="Hinzufügen", command=self.commandAddToTreeview, column=0, row=2
         )
-        alterbutton.pack()
-
-        savebutton = tkinter.Button(
-            self.alterframe,
-            text="Speichern",
-            command=self.commandSaveToTreeview,
-        )
-        savebutton.pack()
-
-        deletebutton = tkinter.Button(
-            self.alterframe,
-            text="Löschen",
-            command=self.commandDeleteFromTreeview,
-        )
-        deletebutton.pack()
 
     def commandAddToTreeview(self):
         firstname = self.firstnameentry.get()
@@ -136,8 +123,8 @@ class MemberGUI(ViewProtocol):
         self.lastnameentry.delete(0, "end")
         if len(selection) == 1:
             item = self.membertree.item(selection)
-            self.firstnameentry.insert(0, item["values"][1])  # type: ignore
-            self.lastnameentry.insert(0, item["values"][0])  # type: ignore
+            self.firstnameentry.insert(0, item["values"][1])
+            self.lastnameentry.insert(0, item["values"][0])
 
     def commandSaveToTreeview(self):
         selection = self.membertree.selection()

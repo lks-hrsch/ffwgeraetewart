@@ -12,7 +12,7 @@ import src.template_processing as tp
 from src.logic.equipmenttypes import EquipmentTypes
 from src.logic.pathes import out_path
 from src.views.alterequipmentdialog import AlterEquipmentDialog
-from src.views.uielements import entry_with_label
+from src.views.uielements import button_grid, button_pack, entry_with_label
 from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
@@ -40,12 +40,22 @@ class EquipmentGUI(ViewProtocol):
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
-        self.initAlterFrame()
         self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
-        self.initPrintFrame()
         self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+
+        buttons: dict = {
+            "Anzeigen": [self.alterframe, self.commandShowSelected],
+            "Löschen": [self.alterframe, self.commandDeleteFromTreeview],
+            "Selektietes Gerät": [self.printframe, self.commandPrintSingleEquipment],
+            "Selektietes Gerät Blanko": [self.printframe, self.commandPrintSingleEquipmentBlanko],
+            "Alle Geräte": [self.printframe, self.commandPrintAllEquipments],
+            "Alle Geräte Blanko": [self.printframe, self.commandPrintAllEquipmentsBlanko],
+        }
+
+        for button_name, button_args in buttons.items():
+            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
 
     def initTreeview(self):
         # Columndefinition
@@ -91,49 +101,14 @@ class EquipmentGUI(ViewProtocol):
         self.vendorentry = entry_with_label(self.addframe, "Hersteller", 0, 3, 2)
         self.yearentry = entry_with_label(self.addframe, "Jahr", 0, 4, 2)
 
-        addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
-        addbutton.grid(column=0, row=5, columnspan=2)
-
-    def initAlterFrame(self):
-        alterbutton = tkinter.Button(self.alterframe, text="Anzeigen", command=self.commandShowSelected)
-        alterbutton.pack()
-
-        deletebutton = tkinter.Button(
-            self.alterframe,
-            text="Löschen",
-            command=self.commandDeleteFromTreeview,
+        button_grid(
+            parent_frame=self.addframe,
+            label_name="Hinzufügen",
+            command=self.commandAddToTreeview,
+            column=0,
+            row=5,
+            columnspan=2,
         )
-        deletebutton.pack()
-
-    def initPrintFrame(self):
-        printsingleequipmentbutton = tkinter.Button(
-            self.printframe,
-            text="Selektietes Gerät",
-            command=self.commandPrintSingleEquipment,
-        )
-        printsingleequipmentbutton.pack()
-
-        printsingleequipmentblankobutton = tkinter.Button(
-            self.printframe,
-            text="Selektietes Gerät Blanko",
-            command=self.commandPrintSingleEquipmentBlanko,
-        )
-        printsingleequipmentblankobutton.pack()
-
-        printallequipmentbutton = tkinter.Button(
-            self.printframe,
-            text="Alle Geräte",
-            command=self.commandPrintAllEquipments,
-        )
-        printallequipmentbutton.pack()
-
-        printallequipmentblankobutton = tkinter.Button(
-            self.printframe,
-            text="Alle Geräte Blanko",
-            command=self.commandPrintAllEquipmentsBlanko,
-        )
-        printallequipmentblankobutton.pack()
-        pass
 
     def commandAddToTreeview(self):
         equipmenttype = self.equipmentcombobox.get()
