@@ -1,0 +1,12 @@
+customtkinter
+sqlalchemy
+python-docx
+docxcompose
+
+# aditional stuff
+pyinstaller
+black
+isort
+
+# for git hooks
+pre-commit
