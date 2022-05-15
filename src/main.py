@@ -1,8 +1,6 @@
 import tkinter
 from typing import Type
 
-import customtkinter  # type: ignore
-
 from src.logic.initialize_database import add_special_psa
 from src.views.equipmentgui import EquipmentGUI
 from src.views.membergui import MemberGUI
@@ -12,7 +10,7 @@ from src.views.specialpsatemplategui import SpecialPsaTemplateGUI
 from src.views.viewprotocol import ViewProtocol
 
 
-class App(customtkinter.CTk):  # type: ignore
+class App(tkinter.Tk):
     frames: dict[
         str, Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[EquipmentGUI]
     ] = {
@@ -23,8 +21,8 @@ class App(customtkinter.CTk):  # type: ignore
         "EquipmentGUI": EquipmentGUI,
     }
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *args, **kwargs) -> None:  # type: ignore
+        tkinter.Tk.__init__(self, *args, **kwargs)
 
         self.title("ffw-geraetewart")
         # self.geometry("200x200")
@@ -54,7 +52,7 @@ class App(customtkinter.CTk):  # type: ignore
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
-        self.container = customtkinter.CTkFrame(self)
+        self.container = tkinter.Frame(self)
         self.container.pack(side="top", fill="both", expand=True)
 
         self.show_frame("MemberGUI")
@@ -75,10 +73,7 @@ class App(customtkinter.CTk):  # type: ignore
 
 
 def main() -> None:
-    customtkinter.set_appearance_mode("dark")
-    customtkinter.set_default_color_theme("dark-blue")
-
-    app: customtkinter.CTk = App()
+    app: tkinter.Tk = App()
     app.mainloop()
 
 
