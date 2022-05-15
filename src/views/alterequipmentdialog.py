@@ -36,9 +36,6 @@ class AlterEquipmentDialog:
         self.initAddFrame()
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        # TODO löschen von Checks noch nicht möglich
-        # TODO Bearbeiten von checks noch nicht möglich
-
     def initTreeview(self):
         # Columndefinition
         self.checkstree["columns"] = treeviewChecksColumns
