@@ -6,12 +6,12 @@ from docxcompose.composer import Composer
 from src.logic.pathes import main_path, out_path
 
 ALL_DOCUMENTS = {
-    "Arbeitskleidung": os.path.join(main_path, "templates/template_arbeitskleidung.docx"),
-    "Einsatzkleidung": os.path.join(main_path, "templates/template_einsatzkleidung.docx"),
-    "Handschuhe": os.path.join(main_path, "templates/template_handschuhe.docx"),
-    "Helm": os.path.join(main_path, "templates/template_helm.docx"),
-    "Kopfschutzhaube": os.path.join(main_path, "templates/template_kopfschutzhaube.docx"),
-    "Schuhe": os.path.join(main_path, "templates/template_schuhe.docx"),
+    "Arbeitskleidung": os.path.join(main_path, "templates", "template_arbeitskleidung.docx"),
+    "Einsatzkleidung": os.path.join(main_path, "templates", "template_einsatzkleidung.docx"),
+    "Handschuhe": os.path.join(main_path, "templates", "template_handschuhe.docx"),
+    "Helm": os.path.join(main_path, "templates", "template_helm.docx"),
+    "Kopfschutzhaube": os.path.join(main_path, "templates", "template_kopfschutzhaube.docx"),
+    "Schuhe": os.path.join(main_path, "templates", "template_schuhe.docx"),
 }
 
 
@@ -97,52 +97,3 @@ def compose_wholepsa(parameters):
         composed_master.append(new_file)
 
     composed_master.save(out_path)
-
-
-if __name__ == "__main__":
-    parameters1 = {
-        "year": "2020",
-        "lastname": "Hirsch",
-        "firstname": "Lukas",
-        "numaj": "1234",
-        "numah": "4321",
-        "numej": "5678",
-        "numeh": "8765",
-        "numhand": "1356",
-        "numhelm": "9645",
-        "yhelm": "1999",
-        "numkopf": "24234",
-        "numschuhe": "135235656",
-    }
-    parameters2 = {
-        "year": "2020",
-        "lastname": "Hirsch",
-        "firstname": "Marko",
-        "numaj": "1234",
-        "numah": "4321",
-        "numej": "5678",
-        "numeh": "8765",
-        "numhand": "1356",
-        "numhelm": "9645",
-        "yhelm": "1999",
-        "numkopf": "24234",
-        "numschuhe": "135235656",
-    }
-    parameters3 = {
-        "year": "2020",
-        "lastname": "Hirsch",
-        "firstname": "Florian",
-        "numaj": "57",
-        "numah": "43456721",
-        "numej": "2345",
-        "numeh": "2345",
-        "numhand": "1356",
-        "numhelm": "9645",
-        "yhelm": "5678",
-        "numkopf": "2422354334",
-        "numschuhe": "236",
-    }
-    parameters = [parameters1, parameters2, parameters3]
-
-    compose_wholepsa(parameters)
-    pass

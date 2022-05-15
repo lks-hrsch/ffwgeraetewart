@@ -10,7 +10,7 @@ def add_special_psa() -> None:
     templates = [
         db.SpecialPsaTemplates(
             type="Wathosen",
-            templatePath=os.path.join(main_path, "templates/template_wathose.docx"),
+            templatePath=os.path.join(main_path, "templates", "template_wathose.docx"),
             propertyKeys=join_array(["year", "number", "lastname", "firstname"]),
             dateCreated=datetime.date.today(),
             dateEdited=datetime.date.today(),
@@ -18,7 +18,7 @@ def add_special_psa() -> None:
         ),
         db.SpecialPsaTemplates(
             type="Schnittschutzhose",
-            templatePath=os.path.join(main_path, "templates/template_schnittschutzhose.docx"),
+            templatePath=os.path.join(main_path, "templates", "template_schnittschutzhose.docx"),
             propertyKeys=join_array(["year", "number", "cyear", "lastname", "firstname"]),
             dateCreated=datetime.date.today(),
             dateEdited=datetime.date.today(),
