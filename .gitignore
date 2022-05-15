@@ -1,0 +1,23 @@
+# VS-Code
+.vscode/
+
+# Pycharm
+.idea/
+
+# Python Files
+__pycache__/
+venv/
+
+# Datenbanken
+*.db
+
+# reports
+reports/
+
+# MacOS Files
+.DS_Store
+
+# Files From Pyinstaller
+build/
+dist/
+main.spec
