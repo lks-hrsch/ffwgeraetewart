@@ -160,7 +160,6 @@ class PsaGUI(ViewProtocol):
                 )
             )
             db.session.commit()
-        pass
 
     def commandPrintSingleMember(self):
         parameters: dict
@@ -196,11 +195,8 @@ class PsaGUI(ViewProtocol):
                 subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
                 os.startfile(out_path)
-        pass
 
     def commandPrintWholeMember(self):
-        parameters = []
-
         selection = self.psatree.selection()
         if len(selection) == 1:
             statement = (
@@ -210,6 +206,8 @@ class PsaGUI(ViewProtocol):
                 .filter(db.Member.deleted.is_(False))
                 .order_by(db.Member.lastname)
             )
+            parameters = []
+
             for record in db.session.execute(statement).all():
                 param = {
                     "year": "2020",
@@ -233,7 +231,6 @@ class PsaGUI(ViewProtocol):
                 subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
                 os.startfile(out_path)
-        pass
 
     def commandPrintAll(self):
         parameters = []
@@ -264,4 +261,3 @@ class PsaGUI(ViewProtocol):
             subprocess.call(("open", out_path))
         elif platform.system() == "Windows":  # Windows
             os.startfile(out_path)
-        pass

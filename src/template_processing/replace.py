@@ -35,7 +35,6 @@ def compose_specificpsa_for_member(parameters: dict, cloth: str):
     find_and_replace(doc, parameters)
     composed_master = Composer(doc)
     composed_master.save(out_path)
-    pass
 
 
 def compose_specificpsa_with_path(parameters: dict, filename: str):
@@ -43,7 +42,6 @@ def compose_specificpsa_with_path(parameters: dict, filename: str):
     find_and_replace(doc, parameters)
     composed_master = Composer(doc)
     composed_master.save(out_path)
-    pass
 
 
 def compose_wholepsa_for_member(parameters: dict):
@@ -77,7 +75,6 @@ def compose_wholepsa_for_member(parameters: dict):
     composed_master.append(schuhe)
 
     composed_master.save(out_path)
-    pass
 
 
 def compose_wholepsa(parameters):
