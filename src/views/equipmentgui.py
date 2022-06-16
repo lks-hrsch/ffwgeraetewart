@@ -150,7 +150,6 @@ class EquipmentGUI(ViewProtocol):
 
         self.identry.delete(0, "end")
         self.nameentry.delete(0, "end")
-        pass
 
     def commandDeleteFromTreeview(self):
         selection = self.equipmenttree.selection()
@@ -164,7 +163,6 @@ class EquipmentGUI(ViewProtocol):
                     .values(dateEdited=datetime.date.today(), deleted=True)
                 )
                 db.session.commit()
-        pass
 
     def commandShowSelected(self):
         selection = self.equipmenttree.selection()
@@ -177,11 +175,8 @@ class EquipmentGUI(ViewProtocol):
                 item["values"][1],
                 item["values"][2],
             )
-        pass
 
     def commandPrintSingleEquipment(self):
-        parameterEquipment = {}
-
         selection = self.equipmenttree.selection()
         if len(selection) == 1:
             item = self.equipmenttree.item(selection)
@@ -197,6 +192,8 @@ class EquipmentGUI(ViewProtocol):
                 return self.commandPrintSingleEquipmentBlanko()
 
             first = True
+            parameterEquipment = {}
+
             for equipment, equipmentcheck in data:
                 if first:
                     parameterEquipment["devicename"] = equipment.name
@@ -220,17 +217,16 @@ class EquipmentGUI(ViewProtocol):
                 subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
                 os.startfile(out_path)
-        pass
 
     def commandPrintSingleEquipmentBlanko(self):
-        parameterEquipment = {}
-
         selection = self.equipmenttree.selection()
         if len(selection) == 1:
             item = self.equipmenttree.item(selection)
             statement = (
                 select(db.Equipment).filter(db.Equipment.id.is_(item["text"])).filter(db.Equipment.deleted.is_(False))
             )
+            parameterEquipment = {}
+
             for record in db.session.execute(statement).all():
                 parameterEquipment["devicename"] = record[0].name
                 parameterEquipment["devicenumber"] = record[0].id
@@ -244,19 +240,19 @@ class EquipmentGUI(ViewProtocol):
                 subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
                 os.startfile(out_path)
-        pass
 
     def commandPrintAllEquipments(self):
         parameterEquipmentList = []
 
         statement = select(db.Equipment).filter(db.Equipment.deleted.is_(False))
         for record in db.session.execute(statement).all():
-            parameterEquipment = {}
-            parameterEquipment["devicename"] = record[0].name
-            parameterEquipment["devicenumber"] = record[0].id
-            parameterEquipment["vendor"] = record[0].vendor
-            parameterEquipment["create/shipmentdate"] = record[0].year
-            parameterEquipment["checks"] = []
+            parameterEquipment = {
+                "devicename": record[0].name,
+                "devicenumber": record[0].id,
+                "vendor": record[0].vendor,
+                "create/shipmentdate": record[0].year,
+                "checks": [],
+            }
 
             statement = (
                 select(db.EquipmentChecks)
@@ -281,19 +277,19 @@ class EquipmentGUI(ViewProtocol):
             subprocess.call(("open", out_path))
         elif platform.system() == "Windows":  # Windows
             os.startfile(out_path)
-        pass
 
     def commandPrintAllEquipmentsBlanko(self):
         parameterEquipmentList = []
 
         statement = select(db.Equipment).filter(db.Equipment.deleted.is_(False))
         for record in db.session.execute(statement).all():
-            parameterEquipment = {}
-            parameterEquipment["devicename"] = record[0].name
-            parameterEquipment["devicenumber"] = record[0].id
-            parameterEquipment["vendor"] = record[0].vendor
-            parameterEquipment["create/shipmentdate"] = record[0].year
-            parameterEquipment["checks"] = []
+            parameterEquipment = {
+                "devicename": record[0].name,
+                "devicenumber": record[0].id,
+                "vendor": record[0].vendor,
+                "create/shipmentdate": record[0].year,
+                "checks": [],
+            }
 
             parameterEquipmentList.append(parameterEquipment)
 
@@ -303,4 +299,3 @@ class EquipmentGUI(ViewProtocol):
             subprocess.call(("open", out_path))
         elif platform.system() == "Windows":  # Windows
             os.startfile(out_path)
-        pass

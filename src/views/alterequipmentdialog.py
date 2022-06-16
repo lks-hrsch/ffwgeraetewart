@@ -17,7 +17,7 @@ class AlterEquipmentDialog:
     def __init__(self, parent, id, name, vendor, year) -> None:
         self.parent = parent
         self.window = tkinter.Toplevel(self.parent)
-        self.window.title(name + " - " + str(id))
+        self.window.title(f"{name} - {str(id)}")
 
         self.propertys = [id, name, vendor, year]
 
@@ -72,7 +72,6 @@ class AlterEquipmentDialog:
                 ),
             )
             self.index += 1
-        pass
 
     def initDetailsFrame(self):
         tkinter.Label(self.detailsframe, text="Id:").grid(column=0, row=0)

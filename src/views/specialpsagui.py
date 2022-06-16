@@ -113,17 +113,13 @@ class SpecialPsaGUI(ViewProtocol):
         self.propertys = self.propertys[0].split(" ")
 
         column = 0
-        row = 0
         self.property_entrys = []
-        for property in self.propertys:
+        for row, property in enumerate(self.propertys):
             tkinter.Label(self.propertyframe, text=property).grid(column=column, row=row)
             entry = tkinter.Entry(self.propertyframe)
             entry.grid(column=column + 1, row=row)
             self.property_entrys.append(entry)
-            row += 1
-
         self.propertyframe.pack(fill="both", expand=1)
-        pass
 
     def initAddFrame(self):
         types = db.session.execute(select(db.SpecialPsaTemplates.type).order_by(db.SpecialPsaTemplates.type)).all()
@@ -138,7 +134,6 @@ class SpecialPsaGUI(ViewProtocol):
 
         addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=2, columnspan=2)
-        pass
 
     def initAlterFrame(self):
         pass
@@ -183,7 +178,6 @@ class SpecialPsaGUI(ViewProtocol):
 
         db.session.add(special_psa)
         db.session.commit()
-        pass
 
     def commandPrintSingleEquipment(self):
         selection = self.special_psa_tree.selection()
@@ -203,4 +197,3 @@ class SpecialPsaGUI(ViewProtocol):
                 subprocess.call(("open", out_path))
             elif platform.system() == "Windows":  # Windows
                 os.startfile(out_path)
-        pass
