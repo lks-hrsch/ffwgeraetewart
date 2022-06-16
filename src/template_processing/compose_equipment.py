@@ -31,11 +31,11 @@ def compose_single_equipment(parameters: dict):
     find_and_replace(doc, parameters)
 
     checkRow = ["test_date", "remark", "testVision", "testFunction", "tester"]
+    parameterChecks: dict = {}
     if len(parameters["checks"]) <= 9:
         find_and_replace(doc, {"pagenumber": "1"})
-        parameterChecks: dict = {}
         for iterChecks in range(1, 10):
-            for check, iter in zip(checkRow, range(0, 5)):
+            for check, iter in zip(checkRow, range(5)):
                 try:
                     parameterChecks[check + str(iterChecks)] = parameters["checks"][iterChecks - 1][iter]
                 except IndexError:
@@ -44,13 +44,13 @@ def compose_single_equipment(parameters: dict):
         composed_master = Composer(doc)
     else:
         find_and_replace(doc, {"pagenumber": str(1)})
-        parameterChecks: dict = {}
         for iterChecks in range(1, 10):
-            for check, iter in zip(checkRow, range(0, 5)):
+            for check, iter in zip(checkRow, range(5)):
                 try:
-                    parameterChecks[check + str(iterChecks)] = parameters["checks"][((1 - 1) * 9) + (iterChecks - 1)][
-                        iter
-                    ]
+                    parameterChecks[check + str(iterChecks)] = parameters[
+                        "checks"
+                    ][0 * 9 + (iterChecks - 1)][iter]
+
                 except IndexError:
                     parameterChecks[check + str(iterChecks)] = ""
         find_and_replace(doc, parameterChecks)
@@ -62,7 +62,7 @@ def compose_single_equipment(parameters: dict):
             find_and_replace(doc, {"pagenumber": str(iterPages)})
             parameterChecks: dict = {}
             for iterChecks in range(1, 10):
-                for check, iter in zip(checkRow, range(0, 5)):
+                for check, iter in zip(checkRow, range(5)):
                     try:
                         parameterChecks[check + str(iterChecks)] = parameters["checks"][
                             ((iterPages - 1) * 9) + (iterChecks - 1)
@@ -86,4 +86,3 @@ def compose_multiple_equipment(parametersList: list):
         else:
             master.append(compose_single_equipment(parameters).doc)
     master.save(out_path)
-    pass

@@ -39,7 +39,7 @@ def paragraph_replace_text(paragraph, regex, replace_str: str):
         # --- occurring in this run with entire replacement str.
         run_text = run.text
         run_len = len(run_text)
-        run.text = "%s%s%s" % (run_text[:start], replace_str, run_text[end:])
+        run.text = f"{run_text[:start]}{replace_str}{run_text[end:]}"
         end -= run_len  # --- note this is run-len before replacement ---
 
         # --- Remove any suffix of match word that occurs in following runs. Note that

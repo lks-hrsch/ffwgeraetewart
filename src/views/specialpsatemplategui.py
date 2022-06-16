@@ -72,7 +72,6 @@ class SpecialPsaTemplateGUI(ViewProtocol):
     def initAddFrame(self):
         add_button = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         add_button.pack()
-        pass
 
     def initAlterFrame(self):
         pass

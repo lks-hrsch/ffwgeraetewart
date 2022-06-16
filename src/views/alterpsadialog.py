@@ -76,9 +76,7 @@ class AlterPsaDialog:
         self.window.destroy()
 
     def commandSave(self):
-        self.ret = []
-        for entry in self.entrys:
-            self.ret.append(entry.get())
+        self.ret = [entry.get() for entry in self.entrys]
         self.window.destroy()
 
     def show(self):
