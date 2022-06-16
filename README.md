@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/lks-hrsch/ffwgeraetewart/badge/master)](https://www.codefactor.io/repository/github/lks-hrsch/ffwgeraetewart/overview/master)
+
 ffwgeraetewart
 
 ## local setup
