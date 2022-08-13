@@ -157,7 +157,7 @@ class PsaGUI(ViewProtocol):
 
         for record in query:
             param = {
-                "year": datetime.datetime.today().strftime("%Y"),
+                "year": datetime.datetime.now().strftime("%Y"),
                 "lastname": record["Member"].lastname,
                 "firstname": record["Member"].firstname,
                 "numaj": record["Psa"].aJacke,
@@ -170,6 +170,7 @@ class PsaGUI(ViewProtocol):
                 "numkopf": record["Psa"].kHaube,
                 "numschuhe": record["Psa"].sShoe,
             }
+
             parameters.append(param)
 
         return parameters
