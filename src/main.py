@@ -2,6 +2,7 @@ import tkinter
 from typing import Type
 
 from src.logic.initialize_database import add_special_psa
+from src.logic.logger import logger
 from src.views.equipmentgui import EquipmentGUI
 from src.views.membergui import MemberGUI
 from src.views.psagui import PsaGUI
@@ -29,6 +30,8 @@ class App(tkinter.Tk):
 
         menubar = tkinter.Menu(self)
         self.config(menu=menubar)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
         member_menu = tkinter.Menu(menubar)
         member_menu.add_command(label="Anzeigen", command=lambda: self.show_frame("MemberGUI"))
@@ -49,12 +52,6 @@ class App(tkinter.Tk):
         menubar.add_cascade(label="Equipment", menu=equipment_menu, underline=0)
         menubar.add_cascade(label="Über", menu=about_menu, underline=0)
 
-        # the container is where we'll stack a bunch of frames
-        # on top of each other, then the one we want visible
-        # will be raised above the others
-        self.container = tkinter.Frame(self)
-        self.container.pack(side="top", fill="both", expand=True)
-
         self.show_frame("MemberGUI")
 
     def show_frame(self, page_name: str) -> None:
@@ -67,14 +64,23 @@ class App(tkinter.Tk):
         view_class: Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[
             EquipmentGUI
         ] | None = self.frames.get(page_name)
-        self.frame: ViewProtocol = view_class(parent=self.container)  # type: ignore
-        self.frame.grid(row=0, column=0, sticky="nsew")
+        self.frame: ViewProtocol = view_class(parent=self)  # type: ignore
+        self.frame.grid(row=0, column=0, sticky="nesw")
+        self.frame.columnconfigure(0, weight=1)
+        self.frame.rowconfigure(0, weight=1)
         self.frame.tkraise()
 
 
+def handle_exception(exception, value, traceback):
+    logger.exception(exception)
+
+
 def main() -> None:
+    logger.info("start app")
     app: tkinter.Tk = App()
+    app.report_callback_exception = handle_exception
     app.mainloop()
+    logger.info("stop app")
 
 
 if __name__ == "__main__":

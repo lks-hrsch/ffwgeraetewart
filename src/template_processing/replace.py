@@ -37,8 +37,9 @@ def compose_specificpsa_for_member(parameters: dict, cloth: str):
     composed_master.save(out_path)
 
 
-def compose_specificpsa_with_path(parameters: dict, filename: str):
-    doc = docx.Document(filename)
+def compose_specificpsa_with_path(parameters: dict, file_name: str):
+    file_path = os.path.join(main_path, *file_name.split("/"))
+    doc = docx.Document(file_path)
     find_and_replace(doc, parameters)
     composed_master = Composer(doc)
     composed_master.save(out_path)

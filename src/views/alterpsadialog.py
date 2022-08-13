@@ -15,7 +15,7 @@ treeviewColumns = (
 )
 
 
-class AlterPsaDialog:
+class AlterPsaDialog(tkinter.Toplevel):
     def __init__(
         self,
         parent,
@@ -30,9 +30,9 @@ class AlterPsaDialog:
         sSchuhwerk,
         kHaube,
     ) -> None:
+        super().__init__(parent)
         self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title(name)
+        self.title(name)
 
         self.propertys = [
             eJacke,
@@ -45,13 +45,13 @@ class AlterPsaDialog:
             sSchuhwerk,
             kHaube,
         ]
-        self.ret = self.propertys
+        self.returning = self.propertys
 
-        self.dataframe = tkinter.LabelFrame(self.window, text="Daten")
+        self.dataframe = tkinter.LabelFrame(self, text="Daten")
         self.entrys = self.initDataFrame()
         self.dataframe.pack(fill="both", expand=1)
 
-        self.buttonframe = tkinter.LabelFrame(self.window, text="Buttons")
+        self.buttonframe = tkinter.LabelFrame(self, text="Buttons")
         self.initButtonFrame()
         self.buttonframe.pack(fill="both", expand=1)
 
@@ -72,14 +72,14 @@ class AlterPsaDialog:
         )
 
     def commandAbord(self):
-        self.ret = self.propertys
-        self.window.destroy()
+        self.returning = self.propertys
+        self.destroy()
 
     def commandSave(self):
-        self.ret = [entry.get() for entry in self.entrys]
-        self.window.destroy()
+        self.returning = [entry.get() for entry in self.entrys]
+        self.destroy()
 
     def show(self):
-        self.window.deiconify()
-        self.window.wait_window()
-        return self.ret
+        self.deiconify()
+        self.wait_window()
+        return self.returning

@@ -1,7 +1,4 @@
 import datetime
-import os
-import platform
-import subprocess
 import tkinter
 from tkinter import ttk
 
@@ -10,8 +7,12 @@ from sqlalchemy import select, update
 import src.models as db
 import src.template_processing as tp
 from src.logic.equipmenttypes import EquipmentTypes
+from src.logic.files import open_file
+from src.logic.logger import logger
 from src.logic.pathes import out_path
+from src.views.acceptdialog import AcceptDialog
 from src.views.alterequipmentdialog import AlterEquipmentDialog
+from src.views.customtreeview import CustomTreeView
 from src.views.uielements import button_grid, button_pack, entry_with_label
 from src.views.viewprotocol import ViewProtocol
 
@@ -28,22 +29,26 @@ class EquipmentGUI(ViewProtocol):
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self.parent = parent
-        self.equipmenttree = ttk.Treeview(self)
 
-        self.initTreeview()
+        # for resizing
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.equipmenttree = CustomTreeView(self, "ID", treeviewColumns)
         self.initData()
-
-        self.equipmenttree.pack(fill="both", expand=1)
+        self.equipmenttree.grid(column=0, row=0, columnspan=3, sticky="nesw")
 
         self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.addframe.grid(column=0, row=1, sticky="nesw")
 
         self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
-        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.alterframe.grid(column=1, row=1, sticky="nesw")
 
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
-        self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.printframe.grid(column=2, row=1, sticky="nesw")
 
         buttons: dict = {
             "Anzeigen": [self.alterframe, self.commandShowSelected],
@@ -56,18 +61,6 @@ class EquipmentGUI(ViewProtocol):
 
         for button_name, button_args in buttons.items():
             button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
-
-    def initTreeview(self):
-        # Columndefinition
-        self.equipmenttree["columns"] = treeviewColumns
-        self.equipmenttree.column("#0", width=200, stretch=tkinter.NO)
-        for column in treeviewColumns:
-            self.equipmenttree.column(column, width=130, stretch=tkinter.NO)
-
-        # Columnheader
-        self.equipmenttree.heading("#0", text="ID", anchor=tkinter.W)
-        for column in treeviewColumns:
-            self.equipmenttree.heading(column, text=column)
 
     def initData(self):
         # init Parents
@@ -154,15 +147,17 @@ class EquipmentGUI(ViewProtocol):
     def commandDeleteFromTreeview(self):
         selection = self.equipmenttree.selection()
         if len(selection) > 0:
-            for item in selection:
-                tmpitem = self.equipmenttree.item(item)
-                self.equipmenttree.delete(item)
-                db.session.execute(
-                    update(db.Equipment)
-                    .where(db.Equipment.id == tmpitem["text"])
-                    .values(dateEdited=datetime.date.today(), deleted=True)
-                )
-                db.session.commit()
+            accept_dialog: AcceptDialog = AcceptDialog(self, f"Willst du wirklich: {selection} löschen?")
+            if accept_dialog.show():
+                for item in selection:
+                    tmpitem = self.equipmenttree.item(item)
+                    self.equipmenttree.delete(item)
+                    db.session.execute(
+                        update(db.Equipment)
+                        .where(db.Equipment.id == tmpitem["text"])
+                        .values(dateEdited=datetime.date.today(), deleted=True)
+                    )
+                    db.session.commit()
 
     def commandShowSelected(self):
         selection = self.equipmenttree.selection()
@@ -213,10 +208,7 @@ class EquipmentGUI(ViewProtocol):
 
             tp.compose_multiple_equipment([parameterEquipment])
 
-            if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", out_path))
-            elif platform.system() == "Windows":  # Windows
-                os.startfile(out_path)
+            open_file(out_path)
 
     def commandPrintSingleEquipmentBlanko(self):
         selection = self.equipmenttree.selection()
@@ -236,10 +228,7 @@ class EquipmentGUI(ViewProtocol):
 
             tp.compose_multiple_equipment([parameterEquipment])
 
-            if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", out_path))
-            elif platform.system() == "Windows":  # Windows
-                os.startfile(out_path)
+            open_file(out_path)
 
     def commandPrintAllEquipments(self):
         parameterEquipmentList = []
@@ -273,10 +262,7 @@ class EquipmentGUI(ViewProtocol):
 
         tp.compose_multiple_equipment(parameterEquipmentList)
 
-        if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", out_path))
-        elif platform.system() == "Windows":  # Windows
-            os.startfile(out_path)
+        open_file(out_path)
 
     def commandPrintAllEquipmentsBlanko(self):
         parameterEquipmentList = []
@@ -295,7 +281,4 @@ class EquipmentGUI(ViewProtocol):
 
         tp.compose_multiple_equipment(parameterEquipmentList)
 
-        if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", out_path))
-        elif platform.system() == "Windows":  # Windows
-            os.startfile(out_path)
+        open_file(out_path)
