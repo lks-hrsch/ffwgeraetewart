@@ -185,7 +185,7 @@ class SpecialPsaGUI(ViewProtocol):
 
             parameters = json.loads(equipment["values"][1])
             parameters["number"] = equipment["text"]
-            parameters["year"] = datetime.datetime.today().strftime("%Y")
+            parameters["year"] = datetime.datetime.now().strftime("%Y")
 
             tp.compose_specificpsa_with_path(parameters, template_path)
 

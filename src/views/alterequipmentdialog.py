@@ -215,4 +215,3 @@ class AlterEquipmentDialog(tkinter.Toplevel):
                 )
             )
             db.session.commit()
-        pass
