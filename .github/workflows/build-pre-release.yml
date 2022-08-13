@@ -132,7 +132,7 @@ jobs:
 
       # https://keithweaverca.medium.com/zip-code-base-with-github-actions-for-releases-aca66f530dae
       - name: Zip Folder
-        run: zip -r ${{ matrix.os }}.zip dist/*
+        run: 7z a ${{ matrix.os }}.zip dist/*
 
       # upload artifact
       - name: upload artifact

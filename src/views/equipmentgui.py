@@ -111,7 +111,7 @@ class EquipmentGUI(ViewProtocol):
         year = self.yearentry.get()
 
         if (equipmenttype == "") or (id == "") or (name == ""):
-            print("missing Value")
+            logger.info("missing Value")
             return
 
         for rubrik in EquipmentTypes:
