@@ -1,9 +1,16 @@
 import os
 import sys
 
-report_dir: str = "reports"
-log_dir: str = "logs"
-out_file: str = "out.docx"
+
+def __create_path(*args) -> str:
+    return_path: str = os.path.join(*args)
+
+    # ensure path exist
+    if not os.path.exists(return_path):
+        os.makedirs(return_path)
+
+    return return_path
+
 
 # determine if application is a script file or frozen exe
 data_dir: list[str] = []
@@ -14,20 +21,9 @@ else:
     data_dir = ["..", "data"]
     application_path = os.path.dirname(__file__)
 
-main_path = os.path.join(application_path, *data_dir)
 
-if not os.path.exists(main_path):
-    os.makedirs(main_path)
-
-report_path = os.path.join(main_path, report_dir)
-
-if not os.path.exists(report_path):
-    os.makedirs(report_path)
-
-out_path = os.path.join(report_path, out_file)
-
-logs_path = os.path.join(main_path, log_dir)
-log_path = os.path.join(logs_path, "ffw-geraetewart.logs")
-
-if not os.path.exists(logs_path):
-    os.makedirs(logs_path)
+main_path: str = __create_path(application_path, *data_dir)
+report_path: str = __create_path(main_path, "reports")
+out_path: str = os.path.join(report_path, "out.docx")
+logs_path: str = __create_path(main_path, "logs")
+log_path: str = os.path.join(logs_path, "ffw-geraetewart.logs")

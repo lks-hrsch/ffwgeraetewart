@@ -6,6 +6,7 @@ from src.logic.pathes import log_path
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 file_handler = TimedRotatingFileHandler(log_path, when="midnight", interval=1)
 file_handler.setLevel(logging.INFO)
