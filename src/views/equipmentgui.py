@@ -2,7 +2,7 @@ import datetime
 import tkinter
 from tkinter import ttk
 
-from sqlalchemy import select, update
+from sqlalchemy import update
 
 import src.models as db
 import src.template_processing as tp
@@ -68,13 +68,13 @@ class EquipmentGUI(ViewProtocol):
             self.equipmenttree.insert("", "end", rubrik.value, text=rubrik.name)
 
         # init Data
-        for record in db.session.query(db.Equipment).filter(db.Equipment.deleted.is_(False)).order_by(db.Equipment.id):
+        for equipment in db.Equipment.get_all(db.session):
             self.equipmenttree.insert(
-                record.category,
+                equipment.category,
                 "end",
-                record.id,
-                text=record.id,
-                values=(record.name, record.vendor, record.year, "", ""),
+                equipment.id,
+                text=equipment.id,
+                values=(equipment.name, equipment.vendor, equipment.year, "", ""),
             )
 
     def initAddFrame(self):
@@ -175,110 +175,87 @@ class EquipmentGUI(ViewProtocol):
         selection = self.equipmenttree.selection()
         if len(selection) == 1:
             item = self.equipmenttree.item(selection)
-            statement = (
-                select(db.Equipment, db.EquipmentChecks)
-                .join(db.EquipmentChecks)
-                .filter(db.Equipment.id.is_(item["text"]))
-                .filter(db.Equipment.deleted.is_(False))
-            )
+            equipment: db.Equipment = db.Equipment.get_by_id(item["text"], db.session)
 
-            data = db.session.execute(statement).all()
-            if len(data) == 0:
+            if len(equipment.checks) == 0:
                 return self.commandPrintSingleEquipmentBlanko()
 
-            first = True
-            parameterEquipment = {}
-
-            for equipment, equipmentcheck in data:
-                if first:
-                    parameterEquipment["devicename"] = equipment.name
-                    parameterEquipment["devicenumber"] = equipment.id
-                    parameterEquipment["vendor"] = equipment.vendor
-                    parameterEquipment["create/shipmentdate"] = equipment.year
-                    parameterEquipment["checks"] = []
-                    first = False
-                check = [
-                    equipmentcheck.test_date,
-                    equipmentcheck.remark,
-                    equipmentcheck.testVision,
-                    equipmentcheck.testFunction,
-                    equipmentcheck.tester,
-                ]
-                parameterEquipment["checks"].append(check)
+            parameterEquipment: dict = {
+                "devicename": equipment.name,
+                "devicenumber": equipment.id,
+                "vendor": equipment.vendor,
+                "create/shipmentdate": equipment.year,
+                "checks": [
+                    [
+                        check.test_date,
+                        check.remark,
+                        check.testVision,
+                        check.testFunction,
+                        check.tester,
+                    ]
+                    for check in equipment.checks
+                ],
+            }
 
             tp.compose_multiple_equipment([parameterEquipment])
-
             open_file(out_path)
 
     def commandPrintSingleEquipmentBlanko(self):
         selection = self.equipmenttree.selection()
         if len(selection) == 1:
             item = self.equipmenttree.item(selection)
-            statement = (
-                select(db.Equipment).filter(db.Equipment.id.is_(item["text"])).filter(db.Equipment.deleted.is_(False))
-            )
-            parameterEquipment = {}
+            equipment: db.Equipment = db.Equipment.get_by_id(item["text"], db.session)
 
-            for record in db.session.execute(statement).all():
-                parameterEquipment["devicename"] = record[0].name
-                parameterEquipment["devicenumber"] = record[0].id
-                parameterEquipment["vendor"] = record[0].vendor
-                parameterEquipment["create/shipmentdate"] = record[0].year
-                parameterEquipment["checks"] = []
+            parameterEquipment: dict = {
+                "devicename": equipment.name,
+                "devicenumber": equipment.id,
+                "vendor": equipment.vendor,
+                "create/shipmentdate": equipment.year,
+                "checks": [],
+            }
 
             tp.compose_multiple_equipment([parameterEquipment])
-
             open_file(out_path)
 
     def commandPrintAllEquipments(self):
-        parameterEquipmentList = []
+        equipments: list[db.Equipment] = db.Equipment.get_all(db.session)
 
-        statement = select(db.Equipment).filter(db.Equipment.deleted.is_(False))
-        for record in db.session.execute(statement).all():
-            parameterEquipment = {
-                "devicename": record[0].name,
-                "devicenumber": record[0].id,
-                "vendor": record[0].vendor,
-                "create/shipmentdate": record[0].year,
-                "checks": [],
+        parameterEquipmentList = [
+            {
+                "devicename": equipment.name,
+                "devicenumber": equipment.id,
+                "vendor": equipment.vendor,
+                "create/shipmentdate": equipment.year,
+                "checks": [
+                    [
+                        check.test_date,
+                        check.remark,
+                        check.testVision,
+                        check.testFunction,
+                        check.tester,
+                    ]
+                    for check in equipment.checks
+                ],
             }
-
-            statement = (
-                select(db.EquipmentChecks)
-                .filter(db.EquipmentChecks.eid.is_(record[0].id))
-                .filter(db.EquipmentChecks.deleted.is_(False))
-            )
-            for record in db.session.execute(statement).all():
-                check = [
-                    record[0].test_date,
-                    record[0].remark,
-                    record[0].testVision,
-                    record[0].testFunction,
-                    record[0].tester,
-                ]
-                parameterEquipment["checks"].append(check)
-
-            parameterEquipmentList.append(parameterEquipment)
+            for equipment in equipments
+        ]
 
         tp.compose_multiple_equipment(parameterEquipmentList)
-
         open_file(out_path)
 
     def commandPrintAllEquipmentsBlanko(self):
-        parameterEquipmentList = []
+        equipments: list[db.Equipment] = db.Equipment.get_all(db.session)
 
-        statement = select(db.Equipment).filter(db.Equipment.deleted.is_(False))
-        for record in db.session.execute(statement).all():
-            parameterEquipment = {
-                "devicename": record[0].name,
-                "devicenumber": record[0].id,
-                "vendor": record[0].vendor,
-                "create/shipmentdate": record[0].year,
+        parameterEquipmentList = [
+            {
+                "devicename": equipment.name,
+                "devicenumber": equipment.id,
+                "vendor": equipment.vendor,
+                "create/shipmentdate": equipment.year,
                 "checks": [],
             }
-
-            parameterEquipmentList.append(parameterEquipment)
+            for equipment in equipments
+        ]
 
         tp.compose_multiple_equipment(parameterEquipmentList)
-
         open_file(out_path)
