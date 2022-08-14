@@ -1,4 +1,5 @@
 import sqlalchemy
+from sqlalchemy import orm
 
 from . import BASE
 
@@ -6,7 +7,7 @@ from . import BASE
 class Equipment(BASE):
     __tablename__ = "equipment"
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     category = sqlalchemy.Column(sqlalchemy.String)
     vendor = sqlalchemy.Column(sqlalchemy.String)
@@ -17,3 +18,11 @@ class Equipment(BASE):
     deleted = sqlalchemy.Column(sqlalchemy.Boolean)
 
     checks = sqlalchemy.orm.relationship("EquipmentChecks", backref="equipment")
+
+    @staticmethod
+    def get_by_id(id: str, session):
+        return session.query(Equipment).filter(Equipment.id.is_(id)).filter(Equipment.deleted.is_(False)).one()
+
+    @staticmethod
+    def get_all(session):
+        return session.query(Equipment).filter(Equipment.deleted.is_(False)).order_by(Equipment.id).all()

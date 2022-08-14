@@ -1,7 +1,4 @@
 import datetime
-import os
-import platform
-import subprocess
 import tkinter
 from tkinter import ttk
 
@@ -9,8 +6,10 @@ from sqlalchemy import select, update
 
 import src.models as db
 import src.template_processing as tp
+from src.logic.files import open_file
 from src.logic.pathes import out_path
 from src.views.alterpsadialog import AlterPsaDialog
+from src.views.customtreeview import CustomTreeView
 from src.views.viewprotocol import ViewProtocol
 
 treeviewColumns = (
@@ -30,32 +29,23 @@ class PsaGUI(ViewProtocol):
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self.parent = parent
-        self.psatree = ttk.Treeview(self)
 
-        self.init_treeview()
+        # for resizing
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.psatree = CustomTreeView(self, "Name", treeviewColumns)
         self.init_data()
-
-        self.psatree.pack()
+        self.psatree.grid(column=0, row=0, columnspan=2, sticky="nesw")
 
         self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
         self.init_alter_frame()
-        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.alterframe.grid(column=0, row=1, sticky="nesw")
 
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
-        self.printframe.pack(fill="both", expand=1, side=tkinter.LEFT)
-
-    def init_treeview(self):
-        # Columndefinition
-        self.psatree["columns"] = treeviewColumns
-        self.psatree.column("#0", width=100, stretch=tkinter.NO)
-        for column in treeviewColumns:
-            self.psatree.column(column, width=130, stretch=tkinter.NO)
-
-        # Columnheader
-        self.psatree.heading("#0", text="Name", anchor=tkinter.W)
-        for column in treeviewColumns:
-            self.psatree.heading(column, text=column)
+        self.printframe.grid(column=1, row=1, sticky="nesw")
 
     def init_data(self):
         self.index = 1
@@ -126,9 +116,8 @@ class PsaGUI(ViewProtocol):
         printallmemberbutton.grid(column=0, row=2, columnspan=2)
 
     def commandOpenAlterView(self):
-        selection = self.psatree.selection()
-        if len(selection) == 1:
-            item = self.psatree.item(selection)
+        if selected := self.psatree.ensure_one_selected():
+            selection, item = selected
             ret = AlterPsaDialog(
                 self,
                 item["text"],
@@ -142,7 +131,6 @@ class PsaGUI(ViewProtocol):
                 item["values"][7],
                 item["values"][8],
             ).show()
-            self.psatree.item(selection, values=ret)
             db.session.execute(
                 update(db.Psa)
                 .where(db.Psa.id == selection[0])
@@ -161,86 +149,13 @@ class PsaGUI(ViewProtocol):
             )
             db.session.commit()
 
-    def commandPrintSingleMember(self):
-        parameters: dict
-
-        selection = self.psatree.selection()
-        if len(selection) == 1:
-            statement = (
-                select(db.Psa, db.Member)
-                .join(db.Member)
-                .filter(db.Psa.id.is_(selection[0]))
-                .filter(db.Member.deleted.is_(False))
-                .order_by(db.Member.lastname)
-            )
-            for record in db.session.execute(statement).all():
-                parameters = {
-                    "year": "2020",
-                    "lastname": record["Member"].lastname,
-                    "firstname": record["Member"].firstname,
-                    "numaj": record["Psa"].aJacke,
-                    "numah": record["Psa"].aHose,
-                    "numej": record["Psa"].eJacke,
-                    "numeh": record["Psa"].eHose,
-                    "numhand": record["Psa"].sGloves,
-                    "numhelm": record["Psa"].hNummer,
-                    "yhelm": record["Psa"].hDate,
-                    "numkopf": record["Psa"].kHaube,
-                    "numschuhe": record["Psa"].sShoe,
-                }
-
-            tp.compose_specificpsa_for_member(parameters, self.psatypecombobox.get())
-
-            if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", out_path))
-            elif platform.system() == "Windows":  # Windows
-                os.startfile(out_path)
-
-    def commandPrintWholeMember(self):
-        selection = self.psatree.selection()
-        if len(selection) == 1:
-            statement = (
-                select(db.Psa, db.Member)
-                .join(db.Member)
-                .filter(db.Psa.id.is_(selection[0]))
-                .filter(db.Member.deleted.is_(False))
-                .order_by(db.Member.lastname)
-            )
-            parameters = []
-
-            for record in db.session.execute(statement).all():
-                param = {
-                    "year": "2020",
-                    "lastname": record["Member"].lastname,
-                    "firstname": record["Member"].firstname,
-                    "numaj": record["Psa"].aJacke,
-                    "numah": record["Psa"].aHose,
-                    "numej": record["Psa"].eJacke,
-                    "numeh": record["Psa"].eHose,
-                    "numhand": record["Psa"].sGloves,
-                    "numhelm": record["Psa"].hNummer,
-                    "yhelm": record["Psa"].hDate,
-                    "numkopf": record["Psa"].kHaube,
-                    "numschuhe": record["Psa"].sShoe,
-                }
-                parameters.append(param)
-
-            tp.compose_wholepsa(parameters)
-
-            if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", out_path))
-            elif platform.system() == "Windows":  # Windows
-                os.startfile(out_path)
-
-    def commandPrintAll(self):
+    @staticmethod
+    def _get_parameter_from_query(query: list) -> list:
         parameters = []
 
-        statement = (
-            select(db.Psa, db.Member).join(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname)
-        )
-        for record in db.session.execute(statement).all():
+        for record in query:
             param = {
-                "year": "2020",
+                "year": datetime.datetime.now().strftime("%Y"),
                 "lastname": record["Member"].lastname,
                 "firstname": record["Member"].firstname,
                 "numaj": record["Psa"].aJacke,
@@ -253,11 +168,52 @@ class PsaGUI(ViewProtocol):
                 "numkopf": record["Psa"].kHaube,
                 "numschuhe": record["Psa"].sShoe,
             }
+
             parameters.append(param)
+
+        return parameters
+
+    def commandPrintSingleMember(self):
+        if selected := self.psatree.ensure_one_selected():
+            selection, _ = selected
+            statement = (
+                select(db.Psa, db.Member)
+                .join(db.Member)
+                .filter(db.Psa.id.is_(selection[0]))
+                .filter(db.Member.deleted.is_(False))
+                .order_by(db.Member.lastname)
+            )
+
+            parameters: dict = self._get_parameter_from_query(db.session.execute(statement).all())[0]  # type: ignore
+
+            tp.compose_specificpsa_for_member(parameters, self.psatypecombobox.get())
+
+            open_file(out_path)
+
+    def commandPrintWholeMember(self):
+        if selected := self.psatree.ensure_one_selected():
+            selection, _ = selected
+            statement = (
+                select(db.Psa, db.Member)
+                .join(db.Member)
+                .filter(db.Psa.id.is_(selection[0]))
+                .filter(db.Member.deleted.is_(False))
+                .order_by(db.Member.lastname)
+            )
+
+            parameters: list = self._get_parameter_from_query(db.session.execute(statement).all())
+
+            tp.compose_wholepsa(parameters)
+
+            open_file(out_path)
+
+    def commandPrintAll(self):
+        statement = (
+            select(db.Psa, db.Member).join(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname)
+        )
+
+        parameters: list = self._get_parameter_from_query(db.session.execute(statement).all())
 
         tp.compose_wholepsa(parameters)
 
-        if platform.system() == "Darwin":  # macOS
-            subprocess.call(("open", out_path))
-        elif platform.system() == "Windows":  # Windows
-            os.startfile(out_path)
+        open_file(out_path)

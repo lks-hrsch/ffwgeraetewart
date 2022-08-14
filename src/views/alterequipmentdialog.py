@@ -2,7 +2,11 @@ import datetime
 import tkinter
 from tkinter import ttk
 
+from sqlalchemy import update
+
 import src.models as db
+from src.views.acceptdialog import AcceptDialog
+from src.views.uielements import button_pack
 
 treeviewChecksColumns = (
     "Prüfdatum",
@@ -13,31 +17,40 @@ treeviewChecksColumns = (
 )
 
 
-class AlterEquipmentDialog:
+class AlterEquipmentDialog(tkinter.Toplevel):
     def __init__(self, parent, id, name, vendor, year) -> None:
+        super().__init__(parent)
         self.parent = parent
-        self.window = tkinter.Toplevel(self.parent)
-        self.window.title(f"{name} - {str(id)}")
+        self.title(f"{name} - {str(id)}")
 
         self.propertys = [id, name, vendor, year]
 
-        self.checkstree = ttk.Treeview(self.window)
+        self.checkstree = ttk.Treeview(self)
 
         self.initTreeview()
         self.initData()
 
-        self.detailsframe = tkinter.LabelFrame(self.window, text="Details")
+        self.detailsframe = tkinter.LabelFrame(self, text="Details")
         self.initDetailsFrame()
         self.detailsframe.pack(fill="both", expand=1)
 
         self.checkstree.pack(fill="both", expand=1)
 
-        self.addframe = tkinter.LabelFrame(self.window, text="Hinzufügen")
+        self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
         self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
 
-        # TODO löschen von Checks noch nicht möglich
-        # TODO Bearbeiten von checks noch nicht möglich
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
+        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+
+        buttons: dict = {
+            "Bearbeiten": [self.alterframe, self.commandGetFromTreeview],
+            "Speichern": [self.alterframe, self.commandSaveToTreeview],
+            "Löschen": [self.alterframe, self.commandDeleteFromTreeview],
+        }
+
+        for button_name, button_args in buttons.items():
+            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
 
     def initTreeview(self):
         # Columndefinition
@@ -52,16 +65,16 @@ class AlterEquipmentDialog:
             self.checkstree.heading(column, text=column)
 
     def initData(self):
-        self.index = 0
         for record in (
             db.session.query(db.EquipmentChecks)
+            .filter(db.EquipmentChecks.deleted.is_(False))
             .filter(db.EquipmentChecks.eid.is_(self.propertys[0]))
             .order_by(db.EquipmentChecks.id)
         ):
             self.checkstree.insert(
                 "",
                 "end",
-                self.index,
+                record.id,
                 text=record.id,
                 values=(
                     record.test_date,
@@ -71,7 +84,6 @@ class AlterEquipmentDialog:
                     record.tester,
                 ),
             )
-            self.index += 1
 
     def initDetailsFrame(self):
         tkinter.Label(self.detailsframe, text="Id:").grid(column=0, row=0)
@@ -117,8 +129,15 @@ class AlterEquipmentDialog:
         testfunction = self.testfunctioncombobox.get()
         tester = self.testerentry.get()
 
+        index = 100
+        try:
+            index = db.session.query(db.EquipmentChecks.id).order_by(db.EquipmentChecks.id.desc()).first()[0] + 1
+        except TypeError as ex:
+            # may the database is empty
+            pass
+
         newEquipmentCheck = db.EquipmentChecks(
-            id=self.index,
+            id=index,
             eid=self.propertys[0],
             test_date=test_date,
             remark=remark,
@@ -136,9 +155,63 @@ class AlterEquipmentDialog:
         self.checkstree.insert(
             "",
             "end",
-            self.index,
-            text="",
+            index,
+            text=index,
             values=(test_date, remark, testvision, testfunction, tester),
         )
 
-        self.index += 1
+    def commandDeleteFromTreeview(self):
+        selection = self.checkstree.selection()
+        if len(selection) > 0:
+            accept_dialog: AcceptDialog = AcceptDialog(self, f"Willst du wirklich: {selection} löschen?")
+            if accept_dialog.show():
+                for item in selection:
+                    tmpitem = self.checkstree.item(item)
+                    self.checkstree.delete(item)
+                    db.session.execute(
+                        update(db.EquipmentChecks)
+                        .where(db.EquipmentChecks.id == tmpitem["text"])
+                        .values(dateEdited=datetime.date.today(), deleted=True)
+                    )
+                    db.session.commit()
+
+    def commandGetFromTreeview(self):
+        selection = self.checkstree.selection()
+        self.testdateentry.delete(0, "end")
+        self.remarkentry.delete(0, "end")
+        self.testvisioncombobox.delete(0, "end")
+        self.testfunctioncombobox.delete(0, "end")
+        self.testerentry.delete(0, "end")
+
+        if len(selection) == 1:
+            item = self.checkstree.item(selection)
+            self.testdateentry.insert(0, item["values"][0])
+            self.remarkentry.insert(0, item["values"][1])
+            self.testvisioncombobox.insert(0, item["values"][2])
+            self.testfunctioncombobox.insert(0, item["values"][3])
+            self.testerentry.insert(0, item["values"][4])
+
+    def commandSaveToTreeview(self):
+        selection = self.checkstree.selection()
+        test_date = self.testdateentry.get()
+        remark = self.remarkentry.get()
+        testvision = self.testvisioncombobox.get()
+        testfunction = self.testfunctioncombobox.get()
+        tester = self.testerentry.get()
+
+        if len(selection) == 1:
+            self.checkstree.item(selection, values=(test_date, remark, testvision, testfunction, tester))
+            item = self.checkstree.item(selection)
+            db.session.execute(
+                update(db.EquipmentChecks)
+                .where(db.EquipmentChecks.id == item["text"])
+                .values(
+                    test_date=test_date,
+                    remark=remark,
+                    testVision=testvision,
+                    testFunction=testfunction,
+                    tester=tester,
+                    dateEdited=datetime.date.today(),
+                )
+            )
+            db.session.commit()

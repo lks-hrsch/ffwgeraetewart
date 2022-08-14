@@ -7,33 +7,22 @@ Special Psa GUI.
 """
 import datetime
 import json
-import os
-import platform
-import subprocess
 import tkinter
 from tkinter import ttk
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 import src.models as db
 import src.template_processing as tp
+from src.logic.files import open_file
 from src.logic.pathes import out_path
-from src.views.uielements import entry_with_label
+from src.views.acceptdialog import AcceptDialog
+from src.views.customtreeview import CustomTreeView
+from src.views.uielements import button_pack
 from src.views.viewprotocol import ViewProtocol
-
-"""
- TODO Create new Template
- TODO Alter Template
- TODO Delete Template
- TODO Create new Special Psa
- TODO Alter Special Psa
- TODO Delete Special Psa
- TODO Print Special Psa
-"""
 
 treeviewColumns = (
     "Typ",
-    "Gerätename",
     "Eigenschaften",
     "dateCreated",
     "dateEdited",
@@ -45,41 +34,42 @@ class SpecialPsaGUI(ViewProtocol):
         super().__init__(parent)
         self.parent = parent
 
-        self.special_psa_tree = ttk.Treeview(self)
-        self.init_treeview()
+        # for resizing
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.special_psa_tree = CustomTreeView(self, "ID", treeviewColumns)
         self.init_treeview_data()
-        self.special_psa_tree.pack(fill="both", expand=1, side=tkinter.TOP)
+        self.special_psa_tree.grid(column=0, row=0, columnspan=4, sticky="nesw")
 
         self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand=1)
+        self.addframe.grid(column=0, row=1, sticky="nesw")
 
         self.propertyframe = tkinter.LabelFrame(self, text="Eigenschaften")
         self.propertys = None
         self.property_entrys = []
 
+        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
+        self.alterframe.grid(column=2, row=1, sticky="nesw")
+
+        buttons: dict = {
+            "Bearbeiten": [self.alterframe, self.commandGetFromTreeview],
+            "Speichern": [self.alterframe, self.commandSaveToTreeview],
+            "Löschen": [self.alterframe, self.commandDeleteFromTreeview],
+        }
+
+        for button_name, button_args in buttons.items():
+            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
+
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
-        self.printframe.pack(fill="both", expand=1)
-
-        self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
-        self.initAlterFrame()
-        self.alterframe.pack(fill="both", expand=1)
-
-    def init_treeview(self):
-        # Columndefinition
-        self.special_psa_tree["columns"] = treeviewColumns
-        self.special_psa_tree.column("#0", width=100, stretch=tkinter.NO)
-        for column in treeviewColumns:
-            self.special_psa_tree.column(column, width=130, stretch=tkinter.NO)
-
-        # Columnheader
-        self.special_psa_tree.heading("#0", text="Name", anchor=tkinter.W)
-        for column in treeviewColumns:
-            self.special_psa_tree.heading(column, text=column)
+        self.printframe.grid(column=3, row=1, sticky="nesw")
 
     def init_treeview_data(self):
-        self.index = 1
         statement = select(db.SpecialPsa).filter(db.SpecialPsa.deleted.is_(False))
         for record in db.session.execute(statement).all():
             self.special_psa_tree.insert(
@@ -89,13 +79,11 @@ class SpecialPsaGUI(ViewProtocol):
                 text=record["SpecialPsa"].id,
                 values=(
                     record["SpecialPsa"].type,
-                    record["SpecialPsa"].number,
                     record["SpecialPsa"].propertys,
                     record["SpecialPsa"].dateCreated,
                     record["SpecialPsa"].dateEdited,
                 ),
             )
-            self.index += 1
 
     def update_propertys(self, event):
         # destroy all widgets from frame
@@ -104,7 +92,7 @@ class SpecialPsaGUI(ViewProtocol):
 
         # this will clear frame and frame will be empty
         # if you want to hide the empty panel then
-        self.propertyframe.pack_forget()
+        self.propertyframe.grid_forget()
 
         selected_type = self.typecombobox.get()
         self.propertys = db.session.execute(
@@ -119,10 +107,19 @@ class SpecialPsaGUI(ViewProtocol):
             entry = tkinter.Entry(self.propertyframe)
             entry.grid(column=column + 1, row=row)
             self.property_entrys.append(entry)
-        self.propertyframe.pack(fill="both", expand=1)
+        self.propertyframe.grid(column=1, row=1, sticky="nesw")
+
+    def fill_propertys(self, propertys):
+        propertys_dict: dict = json.loads(propertys)
+        for iter, value in enumerate(propertys_dict.values()):
+            self.property_entrys[iter].insert(0, value)
 
     def initAddFrame(self):
-        types = db.session.execute(select(db.SpecialPsaTemplates.type).order_by(db.SpecialPsaTemplates.type)).all()
+        types = db.session.execute(
+            select(db.SpecialPsaTemplates.type)
+            .filter(db.SpecialPsaTemplates.deleted.is_(False))
+            .order_by(db.SpecialPsaTemplates.type)
+        ).all()
         types = [x[0] for x in types]
 
         tkinter.Label(self.addframe, text="Typ").grid(column=0, row=0)
@@ -130,16 +127,13 @@ class SpecialPsaGUI(ViewProtocol):
         self.typecombobox.bind("<<ComboboxSelected>>", self.update_propertys)
         self.typecombobox.grid(column=1, row=0)
 
-        self.nameentry = entry_with_label(self.addframe, "Name", 0, 1, 2)
+        label = tkinter.Label(self.addframe, text="Name", width=15)
+        label.grid(column=0, row=1)
+        self.nameentry = tkinter.Entry(self.addframe)
+        self.nameentry.grid(column=1, row=1)
 
         addbutton = tkinter.Button(self.addframe, text="Hinzufügen", command=self.commandAddToTreeview)
         addbutton.grid(column=0, row=2, columnspan=2)
-
-    def initAlterFrame(self):
-        pass
-
-    def initDeleteFrame(self):
-        pass
 
     def initPrintFrame(self):
         printsingleequipmentbutton = tkinter.Button(
@@ -150,11 +144,12 @@ class SpecialPsaGUI(ViewProtocol):
         printsingleequipmentbutton.pack()
 
     def commandAddToTreeview(self):
+        index: str = self.nameentry.get()
         propertys_dict = dict(zip(self.propertys, [x.get() for x in self.property_entrys]))
 
         special_psa = db.SpecialPsa(
+            id=index,
             type=self.typecombobox.get(),
-            number=self.nameentry.get(),
             propertys=json.dumps(propertys_dict),
             dateCreated=datetime.date.today(),
             dateEdited=datetime.date.today(),
@@ -164,25 +159,22 @@ class SpecialPsaGUI(ViewProtocol):
         self.special_psa_tree.insert(
             "",
             "end",
-            self.index,
-            text=self.index,
+            special_psa.id,
+            text=special_psa.id,
             values=(
                 special_psa.type,
-                special_psa.number,
                 special_psa.propertys,
                 special_psa.dateCreated,
                 special_psa.dateEdited,
             ),
         )
-        self.index += 1
 
         db.session.add(special_psa)
         db.session.commit()
 
     def commandPrintSingleEquipment(self):
-        selection = self.special_psa_tree.selection()
-        if len(selection) == 1:
-            equipment = self.special_psa_tree.item(selection[0])
+        if selected := self.special_psa_tree.ensure_one_selected():
+            _, equipment = selected
             template_path = db.session.execute(
                 select(db.SpecialPsaTemplates.templatePath).filter(
                     db.SpecialPsaTemplates.type == equipment["values"][0]
@@ -190,10 +182,54 @@ class SpecialPsaGUI(ViewProtocol):
             ).one_or_none()
             template_path = template_path[0]
 
-            parameters = json.loads(equipment["values"][2])
+            parameters = json.loads(equipment["values"][1])
+            parameters["number"] = equipment["text"]
+            parameters["year"] = datetime.datetime.now().strftime("%Y")
+
             tp.compose_specificpsa_with_path(parameters, template_path)
 
-            if platform.system() == "Darwin":  # macOS
-                subprocess.call(("open", out_path))
-            elif platform.system() == "Windows":  # Windows
-                os.startfile(out_path)
+            open_file(out_path)
+
+    def commandDeleteFromTreeview(self):
+        selection = self.special_psa_tree.selection()
+        if len(selection) > 0:
+            accept_dialog: AcceptDialog = AcceptDialog(self, f"Willst du wirklich: {selection} löschen?")
+            if accept_dialog.show():
+                for item in selection:
+                    tmpitem = self.special_psa_tree.item(item)
+                    self.special_psa_tree.delete(item)
+                    db.session.execute(
+                        update(db.SpecialPsa)
+                        .where(db.SpecialPsa.id == tmpitem["text"])
+                        .values(dateEdited=datetime.date.today(), deleted=True)
+                    )
+                    db.session.commit()
+
+    def commandGetFromTreeview(self):
+        self.typecombobox.delete(0, "end")
+        self.nameentry.delete(0, "end")
+
+        if selected := self.special_psa_tree.ensure_one_selected():
+            _, item = selected
+            self.nameentry.insert(0, item["text"])
+            self.typecombobox.insert(0, item["values"][0])
+
+            self.update_propertys(None)
+            self.fill_propertys(item["values"][1])
+
+    def commandSaveToTreeview(self):
+        type = self.typecombobox.get()
+        propertys_dict = dict(zip(self.propertys, [x.get() for x in self.property_entrys]))
+
+        if selected := self.special_psa_tree.ensure_one_selected():
+            selection, _ = selected
+            self.special_psa_tree.item(selection, values=(type, propertys_dict))
+            db.session.execute(
+                update(db.SpecialPsa)
+                .where(db.SpecialPsa.id == self.nameentry.get())
+                .values(
+                    propertys=json.dumps(propertys_dict),
+                    dateEdited=datetime.date.today(),
+                )
+            )
+            db.session.commit()

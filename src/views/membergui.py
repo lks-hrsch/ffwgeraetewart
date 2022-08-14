@@ -1,61 +1,55 @@
 import datetime
 import tkinter
-from tkinter import ttk
 
 from sqlalchemy import update
 
 import src.models as db
+from src.views.acceptdialog import AcceptDialog
+from src.views.customtreeview import CustomTreeView
 from src.views.uielements import button_grid, button_pack, entry_with_label
 from src.views.viewprotocol import ViewProtocol
+
+treeviewColumns = ("Nachname", "Vorname")
 
 
 class MemberGUI(ViewProtocol):
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self.parent = parent
-        self.membertree = ttk.Treeview(self)
 
-        self.initTreeview()
+        # for resizing
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.membertree = CustomTreeView(self, "ID", treeviewColumns)
         self.initData()
-
-        self.membertree.pack(fill="both", expand=1, side=tkinter.TOP)
+        self.membertree.grid(column=0, row=0, columnspan=2, sticky="nesw")
 
         self.addframe = tkinter.LabelFrame(self, text="Hinzufügen")
         self.initAddFrame()
-        self.addframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.addframe.grid(column=0, row=1, sticky="nesw")
 
         self.alterframe = tkinter.LabelFrame(self, text="Bearbeiten")
-        self.alterframe.pack(fill="both", expand=1, side=tkinter.LEFT)
+        self.alterframe.grid(column=1, row=1, sticky="nesw")
 
         buttons: dict = {
             "Bearbeiten": [self.alterframe, self.commandGetFromTreeview],
             "Speichern": [self.alterframe, self.commandSaveToTreeview],
-            "Löschen Gerät": [self.alterframe, self.commandDeleteFromTreeview],
+            "Löschen": [self.alterframe, self.commandDeleteFromTreeview],
         }
 
         for button_name, button_args in buttons.items():
             button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
 
-    def initTreeview(self):
-        # Columndefinition
-        self.membertree["columns"] = ("Nachname", "Vorname")
-        self.membertree.column("#0", width=270, stretch=tkinter.NO)
-        self.membertree.column("Nachname", width=150, stretch=tkinter.NO)
-        self.membertree.column("Vorname", width=400)
-
-        # Columnheader
-        self.membertree.heading("#0", text="ID", anchor=tkinter.W)
-        self.membertree.heading("Nachname", text="Nachname", anchor=tkinter.W)
-        self.membertree.heading("Vorname", text="Vorname", anchor=tkinter.W)
-
     def initData(self):
-        for record in db.session.query(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname):
+        for member in db.Member.get_all(db.session):
             self.membertree.insert(
                 "",
                 "end",
-                record.id,
-                text=record.id,
-                values=(record.lastname, record.firstname),
+                member.id,
+                text=member.id,
+                values=(member.lastname, member.firstname),
             )
 
     def initAddFrame(self):
@@ -67,14 +61,10 @@ class MemberGUI(ViewProtocol):
         )
 
     def commandAddToTreeview(self):
+        index = db.Member.get_next_id(db.session)
+
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
-        index = 100
-        try:
-            index = db.session.query(db.Member.id).order_by(db.Member.id.desc()).first()[0] + 1
-        except TypeError as ex:
-            # may the database is empty
-            pass
 
         newPsa = db.Psa(
             mid=index,
@@ -107,33 +97,34 @@ class MemberGUI(ViewProtocol):
     def commandDeleteFromTreeview(self):
         selection = self.membertree.selection()
         if len(selection) > 0:
-            for item in selection:
-                tmpitem = self.membertree.item(item)
-                self.membertree.delete(item)
-                db.session.execute(
-                    update(db.Member)
-                    .where(db.Member.id == tmpitem["text"])
-                    .values(dateEdited=datetime.date.today(), deleted=True)
-                )
-                db.session.commit()
+            accept_dialog: AcceptDialog = AcceptDialog(self, f"Willst du wirklich: {selection} löschen?")
+            if accept_dialog.show():
+                for item in selection:
+                    tmpitem = self.membertree.item(item)
+                    self.membertree.delete(item)
+                    db.session.execute(
+                        update(db.Member)
+                        .where(db.Member.id == tmpitem["text"])
+                        .values(dateEdited=datetime.date.today(), deleted=True)
+                    )
+                    db.session.commit()
 
     def commandGetFromTreeview(self):
-        selection = self.membertree.selection()
         self.firstnameentry.delete(0, "end")
         self.lastnameentry.delete(0, "end")
-        if len(selection) == 1:
-            item = self.membertree.item(selection)
+
+        if selected := self.membertree.ensure_one_selected():
+            _, item = selected
             self.firstnameentry.insert(0, item["values"][1])
             self.lastnameentry.insert(0, item["values"][0])
 
     def commandSaveToTreeview(self):
-        selection = self.membertree.selection()
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
 
-        if len(selection) == 1:
+        if selected := self.membertree.ensure_one_selected():
+            selection, item = selected
             self.membertree.item(selection, values=(lastname, firstname))
-            item = self.membertree.item(selection)
             db.session.execute(
                 update(db.Member)
                 .where(db.Member.id == item["text"])
