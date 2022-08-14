@@ -127,26 +127,24 @@ class SpecialPsaTemplateGUI(ViewProtocol):
                     db.session.commit()
 
     def commandGetFromTreeview(self):
-        selection = self.template_tree.selection()
         self.typeentry.delete(0, "end")
         self.pathentry.delete(0, "end")
         self.propertyentry.delete(0, "end")
 
-        if len(selection) == 1:
-            item = self.template_tree.item(selection)
+        if selected := self.template_tree.ensure_one_selected():
+            _, item = selected
             self.typeentry.insert(0, item["values"][0])
             self.pathentry.insert(0, item["values"][1])
             self.propertyentry.insert(0, item["values"][2])
 
     def commandSaveToTreeview(self):
-        selection = self.template_tree.selection()
         type = self.typeentry.get()
         path = self.pathentry.get()
         property = self.propertyentry.get()
 
-        if len(selection) == 1:
+        if selected := self.template_tree.ensure_one_selected():
+            selection, item = selected
             self.template_tree.item(selection, values=(type, path, property))
-            item = self.template_tree.item(selection)
             db.session.execute(
                 update(db.SpecialPsaTemplates)
                 .where(db.SpecialPsaTemplates.id == item["text"])

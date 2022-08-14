@@ -16,3 +16,9 @@ class CustomTreeView(ttk.Treeview):
         for column in other_column_names:
             self.column(column, stretch=tkinter.YES)
             self.heading(column, text=column)
+
+    def ensure_one_selected(self):
+        selection = self.selection()
+        if len(selection) == 1:
+            return selection, self.item(selection)
+        return None

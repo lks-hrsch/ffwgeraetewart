@@ -43,13 +43,13 @@ class MemberGUI(ViewProtocol):
             button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
 
     def initData(self):
-        for record in db.session.query(db.Member).filter(db.Member.deleted.is_(False)).order_by(db.Member.lastname):
+        for member in db.Member.get_all(db.session):
             self.membertree.insert(
                 "",
                 "end",
-                record.id,
-                text=record.id,
-                values=(record.lastname, record.firstname),
+                member.id,
+                text=member.id,
+                values=(member.lastname, member.firstname),
             )
 
     def initAddFrame(self):
@@ -61,14 +61,10 @@ class MemberGUI(ViewProtocol):
         )
 
     def commandAddToTreeview(self):
+        index = db.Member.get_next_id(db.session)
+
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
-        index = 100
-        try:
-            index = db.session.query(db.Member.id).order_by(db.Member.id.desc()).first()[0] + 1
-        except TypeError as ex:
-            # may the database is empty
-            pass
 
         newPsa = db.Psa(
             mid=index,
@@ -114,22 +110,21 @@ class MemberGUI(ViewProtocol):
                     db.session.commit()
 
     def commandGetFromTreeview(self):
-        selection = self.membertree.selection()
         self.firstnameentry.delete(0, "end")
         self.lastnameentry.delete(0, "end")
-        if len(selection) == 1:
-            item = self.membertree.item(selection)
+
+        if selected := self.membertree.ensure_one_selected():
+            _, item = selected
             self.firstnameentry.insert(0, item["values"][1])
             self.lastnameentry.insert(0, item["values"][0])
 
     def commandSaveToTreeview(self):
-        selection = self.membertree.selection()
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
 
-        if len(selection) == 1:
+        if selected := self.membertree.ensure_one_selected():
+            selection, item = selected
             self.membertree.item(selection, values=(lastname, firstname))
-            item = self.membertree.item(selection)
             db.session.execute(
                 update(db.Member)
                 .where(db.Member.id == item["text"])

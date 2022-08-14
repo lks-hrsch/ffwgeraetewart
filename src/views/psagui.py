@@ -116,9 +116,8 @@ class PsaGUI(ViewProtocol):
         printallmemberbutton.grid(column=0, row=2, columnspan=2)
 
     def commandOpenAlterView(self):
-        selection = self.psatree.selection()
-        if len(selection) == 1:
-            item = self.psatree.item(selection)
+        if selected := self.psatree.ensure_one_selected():
+            selection, item = selected
             ret = AlterPsaDialog(
                 self,
                 item["text"],
@@ -132,7 +131,6 @@ class PsaGUI(ViewProtocol):
                 item["values"][7],
                 item["values"][8],
             ).show()
-            self.psatree.item(selection, values=ret)
             db.session.execute(
                 update(db.Psa)
                 .where(db.Psa.id == selection[0])
@@ -176,8 +174,8 @@ class PsaGUI(ViewProtocol):
         return parameters
 
     def commandPrintSingleMember(self):
-        selection = self.psatree.selection()
-        if len(selection) == 1:
+        if selected := self.psatree.ensure_one_selected():
+            selection, _ = selected
             statement = (
                 select(db.Psa, db.Member)
                 .join(db.Member)
@@ -193,8 +191,8 @@ class PsaGUI(ViewProtocol):
             open_file(out_path)
 
     def commandPrintWholeMember(self):
-        selection = self.psatree.selection()
-        if len(selection) == 1:
+        if selected := self.psatree.ensure_one_selected():
+            selection, _ = selected
             statement = (
                 select(db.Psa, db.Member)
                 .join(db.Member)

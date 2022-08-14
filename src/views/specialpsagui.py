@@ -173,9 +173,8 @@ class SpecialPsaGUI(ViewProtocol):
         db.session.commit()
 
     def commandPrintSingleEquipment(self):
-        selection = self.special_psa_tree.selection()
-        if len(selection) == 1:
-            equipment = self.special_psa_tree.item(selection[0])
+        if selected := self.special_psa_tree.ensure_one_selected():
+            _, equipment = selected
             template_path = db.session.execute(
                 select(db.SpecialPsaTemplates.templatePath).filter(
                     db.SpecialPsaTemplates.type == equipment["values"][0]
@@ -207,12 +206,11 @@ class SpecialPsaGUI(ViewProtocol):
                     db.session.commit()
 
     def commandGetFromTreeview(self):
-        selection = self.special_psa_tree.selection()
         self.typecombobox.delete(0, "end")
         self.nameentry.delete(0, "end")
 
-        if len(selection) == 1:
-            item = self.special_psa_tree.item(selection)
+        if selected := self.special_psa_tree.ensure_one_selected():
+            _, item = selected
             self.nameentry.insert(0, item["text"])
             self.typecombobox.insert(0, item["values"][0])
 
@@ -220,11 +218,11 @@ class SpecialPsaGUI(ViewProtocol):
             self.fill_propertys(item["values"][1])
 
     def commandSaveToTreeview(self):
-        selection = self.special_psa_tree.selection()
         type = self.typecombobox.get()
         propertys_dict = dict(zip(self.propertys, [x.get() for x in self.property_entrys]))
 
-        if len(selection) == 1:
+        if selected := self.special_psa_tree.ensure_one_selected():
+            selection, _ = selected
             self.special_psa_tree.item(selection, values=(type, propertys_dict))
             db.session.execute(
                 update(db.SpecialPsa)

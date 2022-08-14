@@ -160,9 +160,8 @@ class EquipmentGUI(ViewProtocol):
                     db.session.commit()
 
     def commandShowSelected(self):
-        selection = self.equipmenttree.selection()
-        if len(selection) == 1:
-            item = self.equipmenttree.item(selection)
+        if selected := self.equipmenttree.ensure_one_selected():
+            _, item = selected
             AlterEquipmentDialog(
                 self,
                 item["text"],
@@ -172,13 +171,9 @@ class EquipmentGUI(ViewProtocol):
             )
 
     def commandPrintSingleEquipment(self):
-        selection = self.equipmenttree.selection()
-        if len(selection) == 1:
-            item = self.equipmenttree.item(selection)
+        if selected := self.equipmenttree.ensure_one_selected():
+            _, item = selected
             equipment: db.Equipment = db.Equipment.get_by_id(item["text"], db.session)
-
-            if len(equipment.checks) == 0:
-                return self.commandPrintSingleEquipmentBlanko()
 
             parameterEquipment: dict = {
                 "devicename": equipment.name,
@@ -201,9 +196,8 @@ class EquipmentGUI(ViewProtocol):
             open_file(out_path)
 
     def commandPrintSingleEquipmentBlanko(self):
-        selection = self.equipmenttree.selection()
-        if len(selection) == 1:
-            item = self.equipmenttree.item(selection)
+        if selected := self.equipmenttree.ensure_one_selected():
+            _, item = selected
             equipment: db.Equipment = db.Equipment.get_by_id(item["text"], db.session)
 
             parameterEquipment: dict = {
