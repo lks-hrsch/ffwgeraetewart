@@ -24,9 +24,11 @@ class Member(BASE):
     @staticmethod
     def get_next_id(session) -> int:
         current_highest_id_member: Member = session.query(Member).order_by(Member.id.desc()).first()
-        if not current_highest_id_member:
-            return 100
-        return int(current_highest_id_member.id) + 1
+        return (
+            int(current_highest_id_member.id) + 1
+            if current_highest_id_member
+            else 100
+        )
 
     @staticmethod
     def get_all(session):
