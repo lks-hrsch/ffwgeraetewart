@@ -20,14 +20,18 @@ class Equipment(BASE):
 
     @staticmethod
     def get_by_id(id: str, session):
-        equipment: Equipment = (
-            session.query(Equipment).filter(Equipment.id.is_(id)).filter(Equipment.deleted.is_(False)).one()
+        return (
+            session.query(Equipment)
+            .filter(Equipment.id.is_(id))
+            .filter(Equipment.deleted.is_(False))
+            .one()
         )
-        return equipment
 
     @staticmethod
     def get_all(session):
-        equipment: list[Equipment] = (
-            session.query(Equipment).filter(Equipment.deleted.is_(False)).order_by(Equipment.id).all()
+        return (
+            session.query(Equipment)
+            .filter(Equipment.deleted.is_(False))
+            .order_by(Equipment.id)
+            .all()
         )
-        return equipment
