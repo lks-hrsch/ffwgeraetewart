@@ -19,6 +19,4 @@ class CustomTreeView(ttk.Treeview):
 
     def ensure_one_selected(self):
         selection = self.selection()
-        if len(selection) == 1:
-            return selection, self.item(selection)
-        return None
+        return (selection, self.item(selection)) if len(selection) == 1 else None
