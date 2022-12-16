@@ -19,7 +19,7 @@ class App(tkinter.Tk):
         "PsaGUI": PsaGUI,
         "SpecialPsaGUI": SpecialPsaGUI,
         "SpecialPsaTemplateGUI": SpecialPsaTemplateGUI,
-        "EquipmentGUI": EquipmentGUI,
+        # "EquipmentGUI": EquipmentGUI,
     }
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
@@ -41,15 +41,15 @@ class App(tkinter.Tk):
         psa_menu.add_command(label="Spezielle PSA", command=lambda: self.show_frame("SpecialPsaGUI"))
         psa_menu.add_command(label="Spezielle PSA Vorlagen", command=lambda: self.show_frame("SpecialPsaTemplateGUI"))
 
-        equipment_menu = tkinter.Menu(menubar)
-        equipment_menu.add_command(label="Anzeigen", command=lambda: self.show_frame("EquipmentGUI"))
+        # equipment_menu = tkinter.Menu(menubar)
+        # equipment_menu.add_command(label="Anzeigen", command=lambda: self.show_frame("EquipmentGUI"))
 
         about_menu = tkinter.Menu(menubar)
         about_menu.add_command(label="Initialisieren Spezieller PSA Vorlagen", command=lambda: add_special_psa())
 
         menubar.add_cascade(label="Mitglieder", menu=member_menu, underline=0)
         menubar.add_cascade(label="PSA", menu=psa_menu, underline=0)
-        menubar.add_cascade(label="Equipment", menu=equipment_menu, underline=0)
+        # menubar.add_cascade(label="Equipment", menu=equipment_menu, underline=0)
         menubar.add_cascade(label="Über", menu=about_menu, underline=0)
 
         self.show_frame("MemberGUI")

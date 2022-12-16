@@ -8,7 +8,7 @@ class Psa(BASE):
     __tablename__ = "psa"
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    mid = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("member.id"))
+    mid = sqlalchemy.Column(sqlalchemy.String(length=4), ForeignKey("member.id"))
     eJacke = sqlalchemy.Column(sqlalchemy.String)
     eHose = sqlalchemy.Column(sqlalchemy.String)
     aJacke = sqlalchemy.Column(sqlalchemy.String)
