@@ -53,27 +53,32 @@ class MemberGUI(ViewProtocol):
             )
 
     def initAddFrame(self):
-        self.firstnameentry = entry_with_label(self.addframe, "Vorname", 0, 0)
-        self.lastnameentry = entry_with_label(self.addframe, "Nachname", 0, 1)
+        self.id_entry = entry_with_label(self.addframe, "ID", 0, 0)
+        self.firstnameentry = entry_with_label(self.addframe, "Vorname", 0, 1)
+        self.lastnameentry = entry_with_label(self.addframe, "Nachname", 0, 2)
 
         button_grid(
-            parent_frame=self.addframe, label_name="Hinzufügen", command=self.commandAddToTreeview, column=0, row=2
+            parent_frame=self.addframe, label_name="Hinzufügen", command=self.commandAddToTreeview, column=0, row=3
         )
 
     def commandAddToTreeview(self):
-        index = db.Member.get_next_id(db.session)
+        member_id = self.id_entry.get()
+
+        if len(member_id) != 4:
+            _: AcceptDialog = AcceptDialog(self, "ID muss 4 Zeichen lang sein")
+            return
 
         firstname = self.firstnameentry.get()
         lastname = self.lastnameentry.get()
 
         newPsa = db.Psa(
-            mid=index,
+            mid=member_id,
             dateCreated=datetime.date.today(),
             dateEdited=datetime.date.today(),
             deleted=False,
         )
         newMember = db.Member(
-            id=index,
+            id=member_id,
             firstname=firstname,
             lastname=lastname,
             dateCreated=datetime.date.today(),
@@ -89,8 +94,8 @@ class MemberGUI(ViewProtocol):
         self.membertree.insert(
             "",
             "end",
-            index,
-            text=index,
+            member_id,
+            text=member_id,
             values=(lastname, firstname),
         )
 
