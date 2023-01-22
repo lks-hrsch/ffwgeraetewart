@@ -9,6 +9,7 @@ ALL_DOCUMENTS = {
     "Arbeitskleidung": os.path.join(main_path, "templates", "template_arbeitskleidung.docx"),
     "Einsatzkleidung": os.path.join(main_path, "templates", "template_einsatzkleidung.docx"),
     "Handschuhe": os.path.join(main_path, "templates", "template_handschuhe.docx"),
+    "TH_Handschuhe": os.path.join(main_path, "templates", "template_th_handschuhe.docx"),
     "Helm": os.path.join(main_path, "templates", "template_helm.docx"),
     "Kopfschutzhaube": os.path.join(main_path, "templates", "template_kopfschutzhaube.docx"),
     "Schuhe": os.path.join(main_path, "templates", "template_schuhe.docx"),
@@ -60,6 +61,11 @@ def compose_wholepsa_for_member(parameters: dict):
     find_and_replace(handschuhe, parameters)
     handschuhe.add_page_break()
     composed_master.append(handschuhe)
+
+    th_handschuhe = docx.Document(ALL_DOCUMENTS["TH_Handschuhe"])
+    find_and_replace(th_handschuhe, parameters)
+    th_handschuhe.add_page_break()
+    composed_master.append(th_handschuhe)
 
     helm = docx.Document(ALL_DOCUMENTS["Helm"])
     find_and_replace(helm, parameters)

@@ -5,7 +5,7 @@ run:
 	python src/main.py
 
 exe:
-	pyinstaller --onefile --windowed --clean src/main.py
+	pyinstaller --onefile --windowed --clean --collect-data "docxcompose" src/main.py
 
 lint:
 	black .
