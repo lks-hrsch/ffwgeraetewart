@@ -16,6 +16,7 @@ class Psa(BASE):
     hNummer = sqlalchemy.Column(sqlalchemy.String)
     hDate = sqlalchemy.Column(sqlalchemy.String)
     sGloves = sqlalchemy.Column(sqlalchemy.String)
+    sTAGloves = sqlalchemy.Column(sqlalchemy.String)  # Technical Assistance Gloves
     sShoe = sqlalchemy.Column(sqlalchemy.String)
     kHaube = sqlalchemy.Column(sqlalchemy.String)
 

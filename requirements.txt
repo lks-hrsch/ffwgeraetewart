@@ -1,11 +1,12 @@
-sqlalchemy
-python-docx
-docxcompose
+sqlalchemy==1.4.46
+python-docx==0.8.11
+docxcompose==1.4.0
 
 # aditional stuff
-pyinstaller
+pyinstaller==5.7.0
 black
 isort
+ruff
 
 # for git hooks
 pre-commit
