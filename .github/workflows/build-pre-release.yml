@@ -87,6 +87,8 @@ jobs:
       - name: install requirements
         run: make install
 
+      - run: python3 -c 'import tkinter'
+
       # build the exe
       - name: build
         run: make exe
@@ -131,6 +133,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "latest"
+
+      - run: python3 -c 'import tkinter'
 
       # install python requirements
       - name: install requirements

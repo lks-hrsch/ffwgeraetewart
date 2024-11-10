@@ -3,7 +3,7 @@ name = "ffwgeraetewart"
 version = "0.1.0"
 description = "a german software for firefighters to manage their equipment"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "docxcompose>=1.4.0",
     "pyinstaller>=6.11.1",
