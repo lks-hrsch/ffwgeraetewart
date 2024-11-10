@@ -5,6 +5,7 @@ Special Psa GUI.
 * Schnittschutzhose
 * Wathosen
 """
+
 import datetime
 import json
 import tkinter
@@ -63,7 +64,11 @@ class SpecialPsaGUI(ViewProtocol):
         }
 
         for button_name, button_args in buttons.items():
-            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
+            button_pack(
+                parent_frame=button_args[0],
+                label_name=button_name,
+                command=button_args[1],
+            )
 
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()

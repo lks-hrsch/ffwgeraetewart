@@ -50,7 +50,11 @@ class AlterEquipmentDialog(tkinter.Toplevel):
         }
 
         for button_name, button_args in buttons.items():
-            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
+            button_pack(
+                parent_frame=button_args[0],
+                label_name=button_name,
+                command=button_args[1],
+            )
 
     def initTreeview(self):
         # Columndefinition
@@ -132,7 +136,7 @@ class AlterEquipmentDialog(tkinter.Toplevel):
         index = 100
         try:
             index = db.session.query(db.EquipmentChecks.id).order_by(db.EquipmentChecks.id.desc()).first()[0] + 1
-        except TypeError as ex:
+        except TypeError:
             # may the database is empty
             pass
 
