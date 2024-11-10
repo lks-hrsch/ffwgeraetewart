@@ -5,7 +5,7 @@ run:
 	PYTHONPATH=./ uv run ./src/main.py
 
 exe:
-	uv run pyinstaller --onefile --windowed --clean -collect-data "docxcompose" src/main.py
+	uv run pyinstaller --onefile --windowed --clean --collect-data "docxcompose" src/main.py
 
 lint:
 	black .
