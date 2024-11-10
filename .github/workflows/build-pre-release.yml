@@ -5,7 +5,7 @@ name: build-pre-release
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -73,14 +73,19 @@ jobs:
 
       # Setup right Python Version
       # https://github.com/actions/setup-python
-      - name: Set up Python 3.11
+      - name: Set up Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.13"
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
 
       # install python requirements
       - name: install requirements
-        run: pip install -r requirements.txt
+        run: make install
 
       # build the exe
       - name: build
@@ -117,14 +122,19 @@ jobs:
 
       # Setup right Python Version
       # https://github.com/actions/setup-python
-      - name: Set up Python 3.11
+      - name: Set up Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.13"
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
 
       # install python requirements
       - name: install requirements
-        run: pip install -r requirements.txt
+        run: make install
 
       # build the exe
       - name: build
