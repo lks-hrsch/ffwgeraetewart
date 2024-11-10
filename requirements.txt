@@ -3,7 +3,7 @@ python-docx==0.8.11
 docxcompose==1.4.0
 
 # aditional stuff
-pyinstaller==5.7.0
+pyinstaller==5.13.1
 black
 isort
 ruff
