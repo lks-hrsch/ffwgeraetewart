@@ -10,6 +10,7 @@ treeviewColumns = (
     "HelmNummer",
     "HelmDatum",
     "Schutzhandschuhe",
+    "TH-Handschuhe",
     "Sicherheitsschuwerk",
     "Kopfschutzhaube",
 )
@@ -27,6 +28,7 @@ class AlterPsaDialog(tkinter.Toplevel):
         hNummer,
         hDatum,
         sHandschuhe,
+        thHandschuhe,
         sSchuhwerk,
         kHaube,
     ) -> None:
@@ -42,6 +44,7 @@ class AlterPsaDialog(tkinter.Toplevel):
             hNummer,
             hDatum,
             sHandschuhe,
+            thHandschuhe,
             sSchuhwerk,
             kHaube,
         ]

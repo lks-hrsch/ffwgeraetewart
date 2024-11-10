@@ -20,6 +20,7 @@ treeviewColumns = (
     "HelmNummer",
     "HelmDatum",
     "Schutzhandschuhe",
+    "TH-Handschuhe",
     "Sicherheitsschuwerk",
     "Kopfschutzhaube",
 )
@@ -66,6 +67,7 @@ class PsaGUI(ViewProtocol):
                     record["Psa"].hNummer,
                     record["Psa"].hDate,
                     record["Psa"].sGloves,
+                    record["Psa"].sTAGloves,
                     record["Psa"].sShoe,
                     record["Psa"].kHaube,
                 ),
@@ -87,6 +89,7 @@ class PsaGUI(ViewProtocol):
                 "Arbeitskleidung",
                 "Einsatzkleidung",
                 "Handschuhe",
+                "TH-Handschuhe",
                 "Helm",
                 "Kopfschutzhaube",
                 "Schuhe",
@@ -130,7 +133,11 @@ class PsaGUI(ViewProtocol):
                 item["values"][6],
                 item["values"][7],
                 item["values"][8],
+                item["values"][9],
             ).show()
+            self.psatree.item(
+                selection, values=(ret[0], ret[1], ret[2], ret[3], ret[4], ret[5], ret[6], ret[7], ret[8], ret[9])
+            )
             db.session.execute(
                 update(db.Psa)
                 .where(db.Psa.id == selection[0])
@@ -142,8 +149,9 @@ class PsaGUI(ViewProtocol):
                     hNummer=ret[4],
                     hDate=ret[5],
                     sGloves=ret[6],
-                    sShoe=ret[7],
-                    kHaube=ret[8],
+                    sTAGloves=ret[7],
+                    sShoe=ret[8],
+                    kHaube=ret[9],
                     dateEdited=datetime.date.today(),
                 )
             )
@@ -163,6 +171,7 @@ class PsaGUI(ViewProtocol):
                 "numej": record["Psa"].eJacke,
                 "numeh": record["Psa"].eHose,
                 "numhand": record["Psa"].sGloves,
+                "numthhand": record["Psa"].sTAGloves,
                 "numhelm": record["Psa"].hNummer,
                 "yhelm": record["Psa"].hDate,
                 "numkopf": record["Psa"].kHaube,
