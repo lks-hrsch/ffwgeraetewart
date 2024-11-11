@@ -83,8 +83,6 @@ jobs:
         with:
           version: "latest"
 
-      - run: python3 -c 'import tkinter'
-
       # build the exe
       - name: build
         run: make exe
@@ -129,8 +127,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "latest"
-
-      - run: python3 -c 'import tkinter'
 
       # build the exe
       - name: build
