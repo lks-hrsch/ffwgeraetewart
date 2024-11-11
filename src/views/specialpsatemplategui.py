@@ -46,7 +46,11 @@ class SpecialPsaTemplateGUI(ViewProtocol):
         }
 
         for button_name, button_args in buttons.items():
-            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
+            button_pack(
+                parent_frame=button_args[0],
+                label_name=button_name,
+                command=button_args[1],
+            )
 
     def init_treeview_data(self):
         self.index = 1
@@ -73,7 +77,11 @@ class SpecialPsaTemplateGUI(ViewProtocol):
         self.propertyentry = entry_with_label(self.addframe, "Eigenschaften", 0, 2)
 
         button_grid(
-            parent_frame=self.addframe, label_name="Hinzufügen", command=self.commandAddToTreeview, column=0, row=3
+            parent_frame=self.addframe,
+            label_name="Hinzufügen",
+            command=self.commandAddToTreeview,
+            column=0,
+            row=3,
         )
 
     def commandAddToTreeview(self):
@@ -86,7 +94,7 @@ class SpecialPsaTemplateGUI(ViewProtocol):
             index = (
                 db.session.query(db.SpecialPsaTemplates.id).order_by(db.SpecialPsaTemplates.id.desc()).first()[0] + 1
             )
-        except TypeError as ex:
+        except TypeError:
             # may the database is empty
             pass
 

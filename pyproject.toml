@@ -1,5 +1,30 @@
+[project]
+name = "ffwgeraetewart"
+version = "0.1.0"
+description = "a german software for firefighters to manage their equipment"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "docxcompose>=1.4.0",
+    "pyinstaller>=6.11.1",
+    "python-docx>=1.1.2",
+    "sqlalchemy>=2.0.36",
+]
+
+
+[tool.uv]
+dev-dependencies = [
+    "black>=24.10.0",
+    "isort>=5.13.2",
+    "pre-commit>=4.0.1",
+    "ruff>=0.7.3",
+]
+
 [tool.black]
 line-length = 120
 
 [tool.isort]
 profile = "black"
+
+[tool.ruff]
+line-length = 120

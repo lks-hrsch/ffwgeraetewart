@@ -1,15 +1,16 @@
 install:
-	pip install -r requirements.txt
+	uv sync
 
 run:
-	python src/main.py
+	PYTHONPATH=./ uv run ./src/main.py
 
 exe:
-	pyinstaller --onefile --windowed --clean --collect-data "docxcompose" src/main.py
+	uv run pyinstaller --onefile --windowed --clean --collect-data "docxcompose" --hidden-import=tkinter src/main.py
 
 lint:
 	black .
 	isort .
+	ruff check .
 
 hooks:
 	pre-commit install
