@@ -77,16 +77,17 @@ class SpecialPsaGUI(ViewProtocol):
     def init_treeview_data(self):
         statement = select(db.SpecialPsa).filter(db.SpecialPsa.deleted.is_(False))
         for record in db.session.execute(statement).all():
+            record = record[0]
             self.special_psa_tree.insert(
                 "",
                 "end",
-                record["SpecialPsa"].id,
-                text=record["SpecialPsa"].id,
+                record.id,
+                text=record.id,
                 values=(
-                    record["SpecialPsa"].type,
-                    record["SpecialPsa"].propertys,
-                    record["SpecialPsa"].dateCreated,
-                    record["SpecialPsa"].dateEdited,
+                    record.type,
+                    record.propertys,
+                    record.dateCreated,
+                    record.dateEdited,
                 ),
             )
 

@@ -56,17 +56,18 @@ class SpecialPsaTemplateGUI(ViewProtocol):
         self.index = 1
         statement = select(db.SpecialPsaTemplates).filter(db.SpecialPsaTemplates.deleted.is_(False))
         for record in db.session.execute(statement).all():
+            record = record[0]
             self.template_tree.insert(
                 "",
                 "end",
-                record["SpecialPsaTemplates"].id,
-                text=record["SpecialPsaTemplates"].id,
+                record.id,
+                text=record.id,
                 values=(
-                    record["SpecialPsaTemplates"].type,
-                    record["SpecialPsaTemplates"].templatePath,
-                    record["SpecialPsaTemplates"].propertyKeys,
-                    record["SpecialPsaTemplates"].dateCreated,
-                    record["SpecialPsaTemplates"].dateEdited,
+                    record.type,
+                    record.templatePath,
+                    record.propertyKeys,
+                    record.dateCreated,
+                    record.dateEdited,
                 ),
             )
             self.index += 1
