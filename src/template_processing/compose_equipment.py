@@ -47,9 +47,7 @@ def compose_single_equipment(parameters: dict):
         for iterChecks in range(1, 10):
             for check, iter in zip(checkRow, range(5)):
                 try:
-                    parameterChecks[check + str(iterChecks)] = parameters[
-                        "checks"
-                    ][0 * 9 + (iterChecks - 1)][iter]
+                    parameterChecks[check + str(iterChecks)] = parameters["checks"][0 * 9 + (iterChecks - 1)][iter]
 
                 except IndexError:
                     parameterChecks[check + str(iterChecks)] = ""

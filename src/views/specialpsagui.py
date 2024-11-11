@@ -5,6 +5,7 @@ Special Psa GUI.
 * Schnittschutzhose
 * Wathosen
 """
+
 import datetime
 import json
 import tkinter
@@ -63,7 +64,11 @@ class SpecialPsaGUI(ViewProtocol):
         }
 
         for button_name, button_args in buttons.items():
-            button_pack(parent_frame=button_args[0], label_name=button_name, command=button_args[1])
+            button_pack(
+                parent_frame=button_args[0],
+                label_name=button_name,
+                command=button_args[1],
+            )
 
         self.printframe = tkinter.LabelFrame(self, text="Drucken")
         self.initPrintFrame()
@@ -72,16 +77,17 @@ class SpecialPsaGUI(ViewProtocol):
     def init_treeview_data(self):
         statement = select(db.SpecialPsa).filter(db.SpecialPsa.deleted.is_(False))
         for record in db.session.execute(statement).all():
+            record = record[0]
             self.special_psa_tree.insert(
                 "",
                 "end",
-                record["SpecialPsa"].id,
-                text=record["SpecialPsa"].id,
+                record.id,
+                text=record.id,
                 values=(
-                    record["SpecialPsa"].type,
-                    record["SpecialPsa"].propertys,
-                    record["SpecialPsa"].dateCreated,
-                    record["SpecialPsa"].dateEdited,
+                    record.type,
+                    record.propertys,
+                    record.dateCreated,
+                    record.dateEdited,
                 ),
             )
 

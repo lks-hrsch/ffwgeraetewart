@@ -13,7 +13,8 @@ from src.views.viewprotocol import ViewProtocol
 
 class App(tkinter.Tk):
     frames: dict[
-        str, Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[EquipmentGUI]
+        str,
+        Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[EquipmentGUI],
     ] = {
         "MemberGUI": MemberGUI,
         "PsaGUI": PsaGUI,
@@ -39,13 +40,19 @@ class App(tkinter.Tk):
         psa_menu = tkinter.Menu(menubar)
         psa_menu.add_command(label="Normale PSA", command=lambda: self.show_frame("PsaGUI"))
         psa_menu.add_command(label="Spezielle PSA", command=lambda: self.show_frame("SpecialPsaGUI"))
-        psa_menu.add_command(label="Spezielle PSA Vorlagen", command=lambda: self.show_frame("SpecialPsaTemplateGUI"))
+        psa_menu.add_command(
+            label="Spezielle PSA Vorlagen",
+            command=lambda: self.show_frame("SpecialPsaTemplateGUI"),
+        )
 
         # equipment_menu = tkinter.Menu(menubar)
         # equipment_menu.add_command(label="Anzeigen", command=lambda: self.show_frame("EquipmentGUI"))
 
         about_menu = tkinter.Menu(menubar)
-        about_menu.add_command(label="Initialisieren Spezieller PSA Vorlagen", command=lambda: add_special_psa())
+        about_menu.add_command(
+            label="Initialisieren Spezieller PSA Vorlagen",
+            command=lambda: add_special_psa(),
+        )
 
         menubar.add_cascade(label="Mitglieder", menu=member_menu, underline=0)
         menubar.add_cascade(label="PSA", menu=psa_menu, underline=0)
@@ -58,12 +65,17 @@ class App(tkinter.Tk):
         """Show a frame for the given page name"""
         try:
             self.frame.destroy()
-        except AttributeError as ex:
+        except AttributeError:
             pass
 
-        view_class: Type[MemberGUI] | Type[PsaGUI] | Type[SpecialPsaGUI] | Type[SpecialPsaTemplateGUI] | Type[
-            EquipmentGUI
-        ] | None = self.frames.get(page_name)
+        view_class: (
+            Type[MemberGUI]
+            | Type[PsaGUI]
+            | Type[SpecialPsaGUI]
+            | Type[SpecialPsaTemplateGUI]
+            | Type[EquipmentGUI]
+            | None
+        ) = self.frames.get(page_name)
         self.frame: ViewProtocol = view_class(parent=self)  # type: ignore
         self.frame.grid(row=0, column=0, sticky="nesw")
         self.frame.columnconfigure(0, weight=1)
