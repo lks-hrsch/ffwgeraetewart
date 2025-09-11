@@ -8,12 +8,12 @@ from src.logic.pathes import main_path
 _DB_URI = f"sqlite:///{os.path.join(main_path, 'database.db')}"
 BASE = declarative_base()
 
-from .equipment import Equipment
-from .equipmentchecks import EquipmentChecks
-from .member import Member
-from .psa import Psa
-from .specialpsa import SpecialPsa
-from .specialpsatemplates import SpecialPsaTemplates
+from .equipment import Equipment  # noqa: E402, F401
+from .equipmentchecks import EquipmentChecks  # noqa: E402, F401
+from .member import Member  # noqa: E402, F401
+from .psa import Psa  # noqa: E402, F401
+from .specialpsa import SpecialPsa  # noqa: E402, F401
+from .specialpsatemplates import SpecialPsaTemplates  # noqa: E402, F401
 
 ENGINE = sqlalchemy.create_engine(_DB_URI)
 

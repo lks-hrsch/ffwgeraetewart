@@ -1,12 +1,10 @@
-import re
-
 """
-    Aus dem Internet
-    Quelle:
-    https://github.com/python-openxml/python-docx/issues/30#issuecomment-879593691
+Aus dem Internet
+Quelle:
+https://github.com/python-openxml/python-docx/issues/30#issuecomment-879593691
 
-    Gefunden nach Recherche auf
-    https://stackoverflow.com/questions/24805671/how-to-use-python-docx-to-replace-text-in-a-word-document-and-save
+Gefunden nach Recherche auf
+https://stackoverflow.com/questions/24805671/how-to-use-python-docx-to-replace-text-in-a-word-document-and-save
 """
 
 
