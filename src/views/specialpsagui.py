@@ -11,6 +11,8 @@ import json
 import tkinter
 from tkinter import ttk
 
+import docx
+from docxcompose.composer import Composer
 from sqlalchemy import select, update
 
 import src.models as db
@@ -75,7 +77,11 @@ class SpecialPsaGUI(ViewProtocol):
         self.printframe.grid(column=3, row=1, sticky="nesw")
 
     def init_treeview_data(self):
-        statement = select(db.SpecialPsa).filter(db.SpecialPsa.deleted.is_(False))
+        statement = (
+            select(db.SpecialPsa)
+            .filter(db.SpecialPsa.deleted.is_(False))
+            .order_by(db.SpecialPsa.type, db.SpecialPsa.id)
+        )
         for record in db.session.execute(statement).all():
             record = record[0]
             self.special_psa_tree.insert(
@@ -149,6 +155,13 @@ class SpecialPsaGUI(ViewProtocol):
         )
         printsingleequipmentbutton.pack()
 
+        printallequipmentbutton = tkinter.Button(
+            self.printframe,
+            text="Alle Geräte",
+            command=self.commandPrintAllEquipment,
+        )
+        printallequipmentbutton.pack()
+
     def commandAddToTreeview(self):
         index: str = self.nameentry.get()
         propertys_dict = dict(zip(self.propertys, [x.get() for x in self.property_entrys]))
@@ -183,7 +196,7 @@ class SpecialPsaGUI(ViewProtocol):
             _, equipment = selected
             template_path = db.session.execute(
                 select(db.SpecialPsaTemplates.templatePath).filter(
-                    db.SpecialPsaTemplates.type == equipment["values"][0]
+                    db.SpecialPsaTemplates.type == equipment["values"][0], db.SpecialPsaTemplates.deleted.is_(False)
                 )
             ).one_or_none()
             template_path = template_path[0]
@@ -195,6 +208,43 @@ class SpecialPsaGUI(ViewProtocol):
             tp.compose_specificpsa_with_path(parameters, template_path)
 
             open_file(out_path)
+
+    def commandPrintAllEquipment(self):
+        statement = select(db.SpecialPsa).filter(db.SpecialPsa.deleted.is_(False)).order_by(db.SpecialPsa.id)
+
+        results = db.session.execute(statement).scalars().all()
+
+        composed_master: Composer | None = None
+
+        for index, special_psa in enumerate(results):
+            print(f"Processing {index}")
+            template_path = db.session.execute(
+                select(db.SpecialPsaTemplates.templatePath).filter(db.SpecialPsaTemplates.type == special_psa.type)
+            ).one_or_none()
+            template_path = template_path[0]
+
+            parameters = json.loads(special_psa.propertys)
+            parameters["number"] = special_psa.id
+            parameters["year"] = datetime.datetime.now().strftime("%Y")
+
+            tp.compose_specificpsa_with_path(parameters, template_path)
+
+            if index == 0:
+                # first element
+                master = docx.Document(out_path)
+                master.add_page_break()
+                composed_master = Composer(master)
+            else:
+                # other elements
+                new_file = docx.Document(out_path)
+                if index != len(results) - 1:
+                    new_file.add_page_break()
+                composed_master.append(new_file)
+
+        composed_master.save(out_path)
+        open_file(out_path)
+
+        pass
 
     def commandDeleteFromTreeview(self):
         selection = self.special_psa_tree.selection()
