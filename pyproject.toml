@@ -6,18 +6,18 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "docxcompose>=1.4.0",
-    "pyinstaller>=6.11.1",
-    "python-docx>=1.1.2",
-    "sqlalchemy>=2.0.36",
+    "pyinstaller>=6.15.0",
+    "python-docx>=1.2.0",
+    "sqlalchemy>=2.0.43",
 ]
 
 
 [tool.uv]
 dev-dependencies = [
-    "black>=24.10.0",
-    "isort>=5.13.2",
-    "pre-commit>=4.0.1",
-    "ruff>=0.7.3",
+    "black>=25.1.0",
+    "isort>=6.0.1",
+    "pre-commit>=4.3.0",
+    "ruff>=0.13.0",
 ]
 
 [tool.black]
