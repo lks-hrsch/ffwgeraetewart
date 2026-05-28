@@ -7,15 +7,17 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: write
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "create-release"
   create-release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      tag_name: ${{ steps.vars.outputs.tag_name }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
@@ -31,6 +33,7 @@ jobs:
         run: |
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "tag_name=${{ steps.branch-name.outputs.current_branch }}/$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       # for some debugging
       - name: Echo out branch values
@@ -46,16 +49,14 @@ jobs:
 
       # create release
       - name: create release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         id: create_release
         with:
           draft: false
           prerelease: true
-          release_name: ${{ steps.branch-name.outputs.current_branch }}-${{ steps.vars.outputs.sha_short }}
-          tag_name: ${{ steps.branch-name.outputs.current_branch }}/${{ steps.vars.outputs.sha_short }}
+          name: ${{ steps.branch-name.outputs.current_branch }}-${{ steps.vars.outputs.sha_short }}
+          tag_name: ${{ steps.vars.outputs.tag_name }}
           body_path: README.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
   # This workflow contains a single job called "build"
   build-linux-macos:
@@ -94,14 +95,10 @@ jobs:
 
       # upload artifact
       - name: upload artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./${{ matrix.os }}.tar.gz
-          asset_name: ffw-geraetewart-${{ matrix.os }}.tar.gz
-          asset_content_type: application/gzip
+          tag_name: ${{ needs.create-release.outputs.tag_name }}
+          files: ./${{ matrix.os }}.tar.gz
 
   # This workflow contains a single job called "build"
   build-windows:
@@ -116,7 +113,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Setup right Python Version
       # https://github.com/actions/setup-python
@@ -140,11 +137,7 @@ jobs:
 
       # upload artifact
       - name: upload artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./${{ matrix.os }}.zip
-          asset_name: ffw-geraetewart-${{ matrix.os }}.zip
-          asset_content_type: application/zip
+          tag_name: ${{ needs.create-release.outputs.tag_name }}
+          files: ./${{ matrix.os }}.zip
