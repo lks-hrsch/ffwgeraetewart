@@ -58,7 +58,7 @@ class PsaGUI(ViewProtocol):
                 "",
                 "end",
                 record[0].id,
-                text=record[1].lastname + " " + record[1].firstname,
+                text=f"{record[1].lastname} {record[1].firstname}",
                 values=(
                     record[0].eJacke,
                     record[0].eHose,

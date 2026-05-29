@@ -217,9 +217,11 @@ class SpecialPsaGUI(ViewProtocol):
         composed_master: Composer | None = None
 
         for index, special_psa in enumerate(results):
-            print(f"Processing {index}")
             template_path = db.session.execute(
-                select(db.SpecialPsaTemplates.templatePath).filter(db.SpecialPsaTemplates.type == special_psa.type)
+                select(db.SpecialPsaTemplates.templatePath).filter(
+                    db.SpecialPsaTemplates.type == special_psa.type,
+                    db.SpecialPsaTemplates.deleted.is_(False),
+                )
             ).one_or_none()
             template_path = template_path[0]
 
@@ -243,8 +245,6 @@ class SpecialPsaGUI(ViewProtocol):
 
         composed_master.save(out_path)
         open_file(out_path)
-
-        pass
 
     def commandDeleteFromTreeview(self):
         selection = self.special_psa_tree.selection()
