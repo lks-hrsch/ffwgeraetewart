@@ -3,6 +3,15 @@
 # ffwgeraetewart
 
 ## local setup
+
+prerequisites:
+
+- pre-commit
+
+``` bash
+❯ brew install pre-commit
+```
+
 to install the pre-commit hooks run
 `make hooks`
 
