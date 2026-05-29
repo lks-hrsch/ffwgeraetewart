@@ -12,6 +12,12 @@ on:
 
 jobs:
   claude-review:
+    # Skip Dependabot PRs: GitHub does not expose repository secrets to
+    # Dependabot-triggered workflow runs, so CLAUDE_CODE_OAUTH_TOKEN is empty
+    # and the review step fails. Automated dependency/lockfile bumps don't
+    # need an AI code review.
+    if: github.actor != 'dependabot[bot]'
+
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||
@@ -41,4 +47,3 @@ jobs:
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-

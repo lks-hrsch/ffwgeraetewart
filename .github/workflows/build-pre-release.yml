@@ -3,7 +3,13 @@ name: build-pre-release
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # On pushes to master, build and publish a pre-release.
+  # On pull requests targeting master, only validate that the build succeeds
+  # (no GitHub release is created and no assets are uploaded). The release
+  # actions require write access / a populated release and are not meant to
+  # run for every pull request.
+  push:
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -44,8 +50,9 @@ jobs:
           echo "Branch: ${{ steps.vars.outputs.branch }}"
           echo "Sha: ${{ steps.vars.outputs.sha_short }}"
 
-      # create release
+      # create release (only on push to master, not on pull requests)
       - name: create release
+        if: github.event_name == 'push'
         uses: actions/create-release@v1
         id: create_release
         with:
@@ -90,10 +97,12 @@ jobs:
         run: make exe
 
       - name: Create tarball
+        if: github.event_name == 'push'
         run: tar -czvf ${{ matrix.os }}.tar.gz dist/*
 
       # upload artifact
       - name: upload artifact
+        if: github.event_name == 'push'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -136,10 +145,12 @@ jobs:
 
       # https://keithweaverca.medium.com/zip-code-base-with-github-actions-for-releases-aca66f530dae
       - name: Zip Folder
+        if: github.event_name == 'push'
         run: 7z a ${{ matrix.os }}.zip dist/*
 
       # upload artifact
       - name: upload artifact
+        if: github.event_name == 'push'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
