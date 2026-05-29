@@ -8,9 +8,9 @@ exe:
 	uv run pyinstaller --onefile --windowed --clean --collect-data "docxcompose" --hidden-import=tkinter src/main.py
 
 lint:
-	black .
-	isort .
-	ruff check .
+	uv run black .
+	uv run isort .
+	uv run ruff check .
 
 hooks:
 	pre-commit install
